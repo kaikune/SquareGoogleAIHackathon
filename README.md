@@ -3,7 +3,7 @@ Entry for Square + Google AI Hackathon 2023
 
 To run backend:
 Open a terminal window and run
-### `npm i'
+### `npm i`
 and then
 ### `cd server && npm start`
 
