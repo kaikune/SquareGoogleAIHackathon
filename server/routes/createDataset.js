@@ -43,8 +43,7 @@ async function createDataset(datasetName) {
     // Set up dataset to handle images
     const dataset = {
         displayName: datasetName,
-        metadataSchemaUri:
-            'gs://google-cloud-aiplatform/schema/dataset/metadata/image_1.0.0.yaml',
+        metadataSchemaUri: 'gs://google-cloud-aiplatform/schema/dataset/metadata/image_1.0.0.yaml',
     };
 
     // Construct request
@@ -75,23 +74,26 @@ router.post('/', async function (req, res) {
     console.log('createDataset() recieved POST request');
     const { bucketName, datasetName } = req.body;
 
+    let [storageResult, datasetResult] = [undefined, undefined];
+
     try {
-        // var datasetResult = '';
-        // const storageResult = createStorage(bucketName).then(() => {
-        //     datasetResult = createDataset(datasetName);
-        // });
-
-        const [storageResult, datasetResult] = await Promise.all([
-            createStorage(bucketName),
-            createDataset(datasetName),
-        ]);
-
-        // Send the results as an array
-        res.json([storageResult, datasetResult]);
+        storageResult = await Promise.resolve(createStorage(bucketName));
     } catch (err) {
-        console.error(err);
+        console.error(err.message);
         res.status(500).json({ error: err.message });
+        return;
     }
+
+    try {
+        datasetResult = await Promise.resolve(createDataset(datasetName));
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: err.message });
+        return;
+    }
+
+    // Send the results as an array
+    res.status(200).json([storageResult, datasetResult]);
 });
 
 module.exports = router;

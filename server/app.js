@@ -9,7 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testServerRouter = require('./routes/testServer');
 var createDataset = require('./routes/createDataset');
-var getSignedUrl = require('./routes/getSignedURL');
+var getSignedUrls = require('./routes/getSignedURLs');
 var trainModel = require('./routes/trainModel');
 
 var app = express();
@@ -29,7 +29,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/testServer', testServerRouter);
 app.use('/createDataset', createDataset);
-app.use('/getSignedUrl', getSignedUrl);
+app.use('/getSignedUrls', getSignedUrls);
 app.use('/trainModel', trainModel);
 
 module.exports = app;
