@@ -1,0 +1,97 @@
+var express = require('express');
+const { DatasetServiceClient } = require('@google-cloud/aiplatform').v1;
+var { Storage } = require('@google-cloud/storage');
+var router = express.Router();
+const project = process.env.PROJECT_ID;
+const location = process.env.LOCATION;
+
+// Create image storage bucket
+async function createStorage(bucketName) {
+    // Add project to front of name because buckets are globally identifyable and dont want to conflict with other buckets
+    const fullName = `${project}-${bucketName}`;
+
+    // Creates a client
+    const storage = new Storage({
+        projectId: project,
+        keyFilename: './avid-poet-398520-23056db53b7a.json',
+    });
+
+    //storage.getBuckets().then((x) => console.log(x));
+
+    try {
+        console.log(`Creating new storage bucket: ${bucketName} ...`);
+        await storage.createBucket(fullName, null);
+        console.log('Bucket created!');
+        return `Bucket ${fullName} created.`;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function createDataset(datasetName) {
+    // Specifies the location of the api endpoint
+    const clientOptions = {
+        apiEndpoint: 'us-central1-aiplatform.googleapis.com',
+    };
+
+    // Instantiates a client
+    const datasetServiceClient = new DatasetServiceClient(clientOptions);
+
+    // Get parent directory
+    const parent = `projects/${project}/locations/${location}`;
+
+    // Set up dataset to handle images
+    const dataset = {
+        displayName: datasetName,
+        metadataSchemaUri:
+            'gs://google-cloud-aiplatform/schema/dataset/metadata/image_1.0.0.yaml',
+    };
+
+    // Construct request
+    const request = {
+        parent,
+        dataset,
+    };
+
+    console.log('Creating dataset ...');
+
+    try {
+        // Create Dataset Request
+        const [response] = await datasetServiceClient.createDataset(request);
+        console.log(`Long running operation : ${response.name}`);
+
+        // Wait for operation to complete
+        const [createDatasetResponse] = await response.promise();
+        console.log(`Created dataset: ${datasetName}`);
+        return createDatasetResponse;
+    } catch (err) {
+        throw err;
+    }
+}
+
+/* POST request handler for creating a dataset for Vertex AI */
+router.post('/', async function (req, res) {
+    // Extract bucketName and datasetName from the request body
+    console.log('createDataset() recieved POST request');
+    const { bucketName, datasetName } = req.body;
+
+    try {
+        // var datasetResult = '';
+        // const storageResult = createStorage(bucketName).then(() => {
+        //     datasetResult = createDataset(datasetName);
+        // });
+
+        const [storageResult, datasetResult] = await Promise.all([
+            createStorage(bucketName),
+            createDataset(datasetName),
+        ]);
+
+        // Send the results as an array
+        res.json([storageResult, datasetResult]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+module.exports = router;

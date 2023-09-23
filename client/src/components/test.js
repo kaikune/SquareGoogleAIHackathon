@@ -1,40 +1,41 @@
-import { Component } from "react";
+import { Component } from 'react';
 
 class Test extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            users: []
-        }
+            users: [],
+        };
     }
 
     componentDidMount() {
-        fetch('/testServer')
-            .then(res => res.json())
-            .then(users => {
-                console.log(users)
-                this.setState({ users: users })
+        fetch('http://localhost:9000/createDataset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bucketName: 'testbucket',
+                datasetName: 'testdataset',
+            }),
+        })
+            .then((res) => {
+                console.log(res); // Log the response to verify the request method
+                return res.json();
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 
     render() {
-        return(
+        return (
             <div>
-            <h1>
-                hello world
-            </h1>
-            <ul> 
-                {
-                    this.state.users.forEach(user => {
-                        <li>
-                            {user.test}
-                        </li>
-                    }
-                    )
-                }
-            </ul>
+                <h1>hello world</h1>
             </div>
-
         );
     }
 }
