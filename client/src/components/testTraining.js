@@ -1,13 +1,6 @@
 import { Component } from 'react';
 
 class Test extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            urls: [],
-        };
-    }
-
     componentDidMount() {
         fetch('http://localhost:9000/api/trainModel', {
             method: 'POST',
@@ -15,9 +8,10 @@ class Test extends Component {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                datasetId: '2964407593298034688', // Needs to be the id of the dataset used. Given when database is created in 'name' field
                 bucketName: 'testbucket',
-                label: 'testproduct',
-                fileName: 'thing.jpeg',
+                modelName: 'testmodel',
+                pipelineName: 'testpipeline',
             }),
         })
             .then((res) => {
@@ -36,12 +30,7 @@ class Test extends Component {
     render() {
         return (
             <div>
-                <h1>Test getSignedURL</h1>
-                <ul>
-                    {this.state.urls.map((url, index) => (
-                        <li key={index}>{url}</li>
-                    ))}
-                </ul>
+                <h1>Test trainModelL</h1>
             </div>
         );
     }

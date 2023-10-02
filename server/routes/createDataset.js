@@ -60,8 +60,9 @@ async function createDataset(datasetName) {
         console.log(`Long running operation : ${response.name}`);
 
         // Wait for operation to complete
-        const [createDatasetResponse] = await response.promise();
+        const [createDatasetResponse] = await response.promise(); // Holds the id for the dataset to be used to import data
         console.log(`Created dataset: ${datasetName}`);
+
         return createDatasetResponse;
     } catch (err) {
         throw err;

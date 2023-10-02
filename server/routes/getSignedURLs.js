@@ -21,7 +21,7 @@ router.post('/', async function (req, res) {
     // Updates CSV locally
     function updateCSV(fileNum) {
         // Adds the location of the image, label to the CSV
-        const csv = `gs://${project}-${bucketName}/${label}/${fileNum}${fileName},${label}\n`;
+        const csv = `gs://${project}-${res.body.bucketName}/${label}/${fileNum}${fileName},${label}\n`;
 
         try {
             fs.appendFileSync('./public/images.csv', csv);

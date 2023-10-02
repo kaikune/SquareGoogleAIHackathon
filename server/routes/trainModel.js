@@ -4,11 +4,15 @@ const project = process.env.PROJECT_ID;
 const location = process.env.LOCATION;
 
 // Imports images from dataset into ai
-function prepareDataset(dataset, bucketName) {
+async function prepareDataset(datasetId, bucketName) {
     console.log('Importing dataset from storage...');
     const { DatasetServiceClient } = require('@google-cloud/aiplatform'); //.v1beta1
-    const aiplatformClient = new DatasetServiceClient();
-    const parent = `projects/${project}/locations/${location}/datasets/${dataset}`;
+    const clientOptions = { apiEndpoint: 'us-central1-aiplatform.googleapis.com' };
+    const aiplatformClient = new DatasetServiceClient(clientOptions);
+
+    const name = aiplatformClient.datasetPath(project, location, datasetId);
+
+    //console.log(name);
 
     async function callImportData() {
         // Contruct importConfigs
@@ -21,7 +25,7 @@ function prepareDataset(dataset, bucketName) {
 
         // Construct request
         const request = {
-            parent,
+            name,
             importConfigs,
         };
 
@@ -31,20 +35,23 @@ function prepareDataset(dataset, bucketName) {
         console.log(response);
     }
 
-    callImportData();
+    await callImportData();
 }
 
-// res in the form of {datasetName: 'dataset name', modelName: 'model name', pipelineName, 'pipeline name'}
-router.get('/', function (req, res) {
-    const datasetId = req.datasetName;
-    const modelDisplayName = req.modelName;
-    const trainingPipelineDisplayName = res.pipelineName;
+// res in the form of {datasetId: 'dataset id (number)', bucketName: 'bucket name', modelName: 'model name', pipelineName, 'pipeline name'}
+router.post('/', async function (req, res) {
+    const datasetId = req.body.datasetId;
+    const bucketName = `${project}-${req.body.bucketName}`;
+    const modelDisplayName = req.body.modelName;
+    const trainingPipelineDisplayName = req.body.pipelineName;
+
+    console.log(`trainModel request recieved: {datasetId: ${datasetId}, bucketName: ${bucketName}, modelName: ${modelDisplayName}, pipelineName: ${trainingPipelineDisplayName}}\n`);
 
     // Imports the Google Cloud Pipeline Service Client library
     const aiplatform = require('@google-cloud/aiplatform');
 
     // Get dataset ready for training
-    prepareDataset(datasetName);
+    await prepareDataset(datasetId, bucketName);
 
     const { definition } = aiplatform.protos.google.cloud.aiplatform.v1.schema.trainingjob;
     const ModelType = definition.AutoMlImageClassificationInputs.ModelType;
@@ -64,9 +71,9 @@ router.get('/', function (req, res) {
 
         // Values should match the input expected by your model.
         const trainingTaskInputsMessage = new definition.AutoMlImageClassificationInputs({
-            multiLabel: true,
+            multiLabel: false,
             modelType: ModelType.CLOUD,
-            budgetMilliNodeHours: 8000,
+            budgetMilliNodeHours: 8 * 1000, // DO NOT GO TOO HIGH
             disableEarlyStopping: false,
         });
 
@@ -85,6 +92,8 @@ router.get('/', function (req, res) {
         };
         const request = { parent, trainingPipeline };
 
+        console.log('Creating training pipeling request...');
+
         // Create training pipeline request
         const [response] = await pipelineServiceClient.createTrainingPipeline(request);
 
@@ -97,7 +106,7 @@ router.get('/', function (req, res) {
     }
 
     // Sends the response of the training to the frontend
-    res.json(createTrainingPipelineImageClassification());
+    res.status(200).json(createTrainingPipelineImageClassification());
 });
 
 module.exports = router;
