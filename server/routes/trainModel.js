@@ -3,8 +3,8 @@ var router = express.Router();
 const project = process.env.PROJECT_ID;
 const location = process.env.LOCATION;
 
-// Imports images from storage bucket into dataset
-function prepareDataset(dataset) {
+// Imports images from dataset into ai
+function prepareDataset(dataset, bucketName) {
     console.log('Importing dataset from storage...');
     const { DatasetServiceClient } = require('@google-cloud/aiplatform'); //.v1beta1
     const aiplatformClient = new DatasetServiceClient();
@@ -15,8 +15,7 @@ function prepareDataset(dataset) {
         const importConfigs = [
             {
                 gcsSource: { uris: [`gs://${bucketName}/images.csv`] }, // Hopefully this imports everything correctly
-                importSchemaUri:
-                    'gs://google-cloud-aiplatform/schema/dataset/ioformat/image_classification_single_label_io_format_1.0.0.yaml',
+                importSchemaUri: 'gs://google-cloud-aiplatform/schema/dataset/ioformat/image_classification_single_label_io_format_1.0.0.yaml',
             },
         ];
 
@@ -47,8 +46,7 @@ router.get('/', function (req, res) {
     // Get dataset ready for training
     prepareDataset(datasetName);
 
-    const { definition } =
-        aiplatform.protos.google.cloud.aiplatform.v1.schema.trainingjob;
+    const { definition } = aiplatform.protos.google.cloud.aiplatform.v1.schema.trainingjob;
     const ModelType = definition.AutoMlImageClassificationInputs.ModelType;
 
     // Specifies the location of the api endpoint
@@ -65,18 +63,16 @@ router.get('/', function (req, res) {
         const parent = `projects/${project}/locations/${location}`;
 
         // Values should match the input expected by your model.
-        const trainingTaskInputsMessage =
-            new definition.AutoMlImageClassificationInputs({
-                multiLabel: true,
-                modelType: ModelType.CLOUD,
-                budgetMilliNodeHours: 8000,
-                disableEarlyStopping: false,
-            });
+        const trainingTaskInputsMessage = new definition.AutoMlImageClassificationInputs({
+            multiLabel: true,
+            modelType: ModelType.CLOUD,
+            budgetMilliNodeHours: 8000,
+            disableEarlyStopping: false,
+        });
 
         const trainingTaskInputs = trainingTaskInputsMessage.toValue();
 
-        const trainingTaskDefinition =
-            'gs://google-cloud-aiplatform/schema/trainingjob/definition/automl_image_classification_1.0.0.yaml';
+        const trainingTaskDefinition = 'gs://google-cloud-aiplatform/schema/trainingjob/definition/automl_image_classification_1.0.0.yaml';
 
         const modelToUpload = { displayName: modelDisplayName };
         const inputDataConfig = { datasetId };
@@ -90,9 +86,7 @@ router.get('/', function (req, res) {
         const request = { parent, trainingPipeline };
 
         // Create training pipeline request
-        const [response] = await pipelineServiceClient.createTrainingPipeline(
-            request
-        );
+        const [response] = await pipelineServiceClient.createTrainingPipeline(request);
 
         console.log('Create training pipeline image classification response');
         console.log(`Name : ${response.name}`);

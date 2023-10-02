@@ -9,7 +9,7 @@ class Test extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:9000/createDataset', {
+        fetch('http://localhost:9000/api/createDataset', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

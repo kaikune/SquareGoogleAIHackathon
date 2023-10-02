@@ -4,9 +4,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 require('dotenv').config();
-require("./data/db");
+require('./data/db');
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var testServerRouter = require('./routes/testServer');
 var createDataset = require('./routes/createDataset');
 var getSignedUrls = require('./routes/getSignedURLs');
@@ -26,10 +25,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/testServer', testServerRouter);
-app.use('/createDataset', createDataset);
-app.use('/getSignedUrls', getSignedUrls);
-app.use('/trainModel', trainModel);
+app.use('/api/testServer', testServerRouter);
+app.use('/api/createDataset', createDataset);
+app.use('/api/getSignedUrls', getSignedUrls);
+app.use('/api/trainModel', trainModel);
 
 module.exports = app;

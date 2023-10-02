@@ -9,7 +9,7 @@ class Test extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:9000/api/getSignedUrls', {
+        fetch('http://localhost:9000/api/trainModel', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
