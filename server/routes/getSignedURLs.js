@@ -4,11 +4,13 @@ const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
 const project = process.env.PROJECT_ID;
 
-// req in the form of {bucketName: 'bucket name', label: 'product name', fileName: 'filename.jpeg'}
+// req in the form of {bucketName: 'bucket name', label: 'product name', fileNames: ['filename.jpeg']}
 router.post('/', async function (req, res) {
     const label = req.body.label;
     const bucketName = `${project}-${req.body.bucketName}`;
-    const fileName = `${label}/${req.body.fileName}`;
+    const fileNames = req.body.fileNames;
+
+    console.log(`Recieved input of {${bucketName}, ${label}, ${fileNames}}`);
 
     // Creates a client
     const storage = new Storage({
@@ -19,9 +21,9 @@ router.post('/', async function (req, res) {
     //console.log(`bucketName: ${bucketName}, label: ${label}, product: ${fileName}`);
 
     // Updates CSV locally
-    function updateCSV(fileNum) {
+    function updateCSV(fileName, fileNum) {
         // Adds the location of the image, label to the CSV
-        const csv = `gs://${project}-${res.body.bucketName}/${label}/${fileNum}${fileName},${label}\n`;
+        const csv = `gs://${bucketName}/${label}/${fileNum}${fileName},${label}\n`;
 
         try {
             fs.appendFileSync('./public/images.csv', csv);
@@ -55,7 +57,7 @@ router.post('/', async function (req, res) {
         }
     }
 
-    async function generateUploadSignedUrl(fileNum) {
+    async function generateUploadSignedUrl(fileName, fileNum) {
         // These options will allow temporary uploading of the file
         const options = {
             version: 'v4',
@@ -65,7 +67,7 @@ router.post('/', async function (req, res) {
         };
 
         // Get a signed URL for uploading file
-        const [url] = await storage.bucket(bucketName).file(`${fileNum}/${fileName}`).getSignedUrl(options);
+        const [url] = await storage.bucket(bucketName).file(`${label}/${fileNum}${fileName}`).getSignedUrl(options);
 
         //console.log('Generated PUT signed URL:');
         //console.log(url);
@@ -74,13 +76,13 @@ router.post('/', async function (req, res) {
     }
 
     let urls = [];
-
     console.log('Generating signed urls');
+
     try {
         // Can change to whatever number of images we need
-        for (let i = 0; i < 10; i++) {
-            updateCSV(i);
-            urls.push(await generateUploadSignedUrl(i));
+        for (let i = 0; i < fileNames.length; i++) {
+            updateCSV(fileNames[i], i);
+            urls.push(await generateUploadSignedUrl(fileNames[i], i));
         }
     } catch (err) {
         console.log(err);
@@ -92,6 +94,7 @@ router.post('/', async function (req, res) {
     uploadCSV();
 
     // Send array of valid urls
+    //res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.status(200).send(urls);
 });
 
