@@ -10,15 +10,31 @@ router.post('/', async function (req, res) {
     const bucketName = `${project}-${req.body.bucketName}`;
     const fileNames = req.body.fileNames;
 
-    console.log(`Recieved input of {${bucketName}, ${label}, ${fileNames}}`);
+    //console.log(`Recieved input of {${bucketName}, ${label}, ${fileNames}}`);
 
     // Creates a client
     const storage = new Storage({
         projectId: project,
-        keyFilename: './avid-poet-398520-23056db53b7a.json',
+        keyFilename: process.env.SECRET_KEY,
     });
 
     //console.log(`bucketName: ${bucketName}, label: ${label}, product: ${fileName}`);
+
+    // Download csv from gcs to update it. Throws error if file not found
+    async function downloadCSV() {
+        const options = {
+            destination: './public/images.csv',
+        };
+
+        // Downloads the file
+
+        try {
+            await storage.bucket(bucketName).file('images.csv').download(options);
+            console.log('images.csv downloaded');
+        } catch {
+            console.log('images.csv not found, creating local file');
+        }
+    }
 
     // Updates CSV locally
     function updateCSV(fileName, fileNum) {
@@ -26,6 +42,7 @@ router.post('/', async function (req, res) {
         const csv = `gs://${bucketName}/${label}/${fileNum}${fileName},${label}\n`;
 
         try {
+            // Appends to file if found else create new file and write to it
             fs.appendFileSync('./public/images.csv', csv);
         } catch (err) {
             console.error(err);
@@ -37,7 +54,6 @@ router.post('/', async function (req, res) {
         const options = {
             destination: 'images.csv',
         };
-
         try {
             // Upload CSV to GCS using async/await
             await storage.bucket(bucketName).upload('./public/images.csv', options);
@@ -75,9 +91,11 @@ router.post('/', async function (req, res) {
         return url;
     }
 
+    console.log('Attempting to download images.csv from csv');
+    await downloadCSV();
+
     let urls = [];
     console.log('Generating signed urls');
-
     try {
         // Can change to whatever number of images we need
         for (let i = 0; i < fileNames.length; i++) {

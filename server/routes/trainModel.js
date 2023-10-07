@@ -7,8 +7,11 @@ const location = process.env.LOCATION;
 async function prepareDataset(datasetId, bucketName) {
     console.log('Importing dataset from storage...');
     const { DatasetServiceClient } = require('@google-cloud/aiplatform'); //.v1beta1
-    const clientOptions = { apiEndpoint: 'us-central1-aiplatform.googleapis.com' };
-    const aiplatformClient = new DatasetServiceClient(clientOptions);
+    const aiplatformClient = new DatasetServiceClient({
+        projectId: project,
+        keyFilename: process.env.SECRET_KEY,
+        apiEndpoint: 'us-central1-aiplatform.googleapis.com',
+    });
 
     const name = aiplatformClient.datasetPath(project, location, datasetId);
 
@@ -31,6 +34,7 @@ async function prepareDataset(datasetId, bucketName) {
 
         // Run request
         const [operation] = await aiplatformClient.importData(request);
+        //TODO: Add code to get progress % with operation.metadata
         const [response] = await operation.promise();
         console.log(response);
     }

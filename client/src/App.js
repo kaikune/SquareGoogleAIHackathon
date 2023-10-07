@@ -6,7 +6,11 @@ import TestUL from './components/testUpload';
 function App() {
     return (
         // Can get rid of test for actual development
-        <TestUL />
+        <div>
+            <TestDS />
+            <TestUL />
+            <TestTM />
+        </div>
     );
 }
 

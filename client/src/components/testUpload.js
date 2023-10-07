@@ -23,7 +23,7 @@ function FileUpload() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    bucketName: 'testbucket',
+                    bucketName: 'teststore', // Change to store name
                     label: label, // Label for all the images
                     fileNames: fileNames, // Send an array of file names
                 }),
@@ -73,7 +73,7 @@ function FileUpload() {
     return (
         <div>
             <h1>Label</h1>
-            <input type="text" name="label" value={label} onChange={handleLabelChange} />
+            <input type="text" value={label} onChange={handleLabelChange} />
 
             <h1>Upload Multiple Files</h1>
             <input type="file" multiple onChange={handleFileChange} />

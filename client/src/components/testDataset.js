@@ -1,26 +1,28 @@
-import { Component } from 'react';
+import React, { useState } from 'react';
 
-class Test extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            users: [],
-        };
-    }
+function CreateStorage() {
+    const [storeName, setStoreName] = useState('');
+    const [message, setMessage] = useState('');
 
-    componentDidMount() {
+    const handleName = (e) => {
+        setStoreName(e.target.value);
+    };
+
+    const storageHandler = async () => {
+        setMessage('Creating Dataset...');
         fetch('http://localhost:9000/api/createDataset', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                bucketName: 'testbucket',
-                datasetName: 'testdataset',
+                bucketName: storeName.toLowerCase(),
+                datasetName: `${storeName.toLowerCase()}dataset`,
             }),
         })
             .then((res) => {
-                console.log(res); // Log the response to verify the request method
+                if (res.ok) setMessage('Dataset Created');
+                else setMessage('Something went wrong');
                 return res.json();
             })
             .then((data) => {
@@ -29,15 +31,18 @@ class Test extends Component {
             .catch((error) => {
                 console.error(error);
             });
-    }
+    };
 
-    render() {
-        return (
-            <div>
-                <h1>Test createDataset</h1>
-            </div>
-        );
-    }
+    return (
+        <div>
+            <h1>Input Store Name</h1>
+            <input type="text" value={storeName} onChange={handleName}></input>
+
+            <h1>Test createDataset</h1>
+            <button onClick={storageHandler}>Create Dataset</button>
+            {message && <div>{message}</div>}
+        </div>
+    );
 }
 
-export default Test;
+export default CreateStorage;
