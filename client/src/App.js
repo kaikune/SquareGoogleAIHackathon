@@ -3,10 +3,11 @@ import TestDS from './components/testDataset'; // Tests the createDataset endpoi
 import TestTM from './components/testTraining'; // Tests the trainModel endpoint
 import TestUL from './components/testUpload';
 
+import Shop from './shop';
+
 function App() {
     return (
-        // Can get rid of test for actual development
-        <TestUL />
+        <Shop />
     );
 }
 
