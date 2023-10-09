@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 function TrainModel() {
     const [message, setMessage] = useState('');
+    const [modelURL, setModelURL] = useState('');
 
     const handleTraining = async () => {
         fetch('http://localhost:9000/api/trainModel', {
@@ -19,10 +20,13 @@ function TrainModel() {
             .then((res) => {
                 //console.log(res); // Log the response to verify the request method
                 setMessage('Model Finished Training!');
-                return res.json();
+                if (res.ok) return res.json();
+                throw res;
             })
             .then((data) => {
-                console.log(data);
+                // Sets the url of the model to be accessible
+                setModelURL(`${data.replace('gs:/', 'https://storage.googleapis.com')}/model.json`);
+                console.log(modelURL);
             })
             .catch((error) => {
                 console.error(error);

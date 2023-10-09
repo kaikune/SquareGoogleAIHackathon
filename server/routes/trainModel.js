@@ -151,21 +151,26 @@ router.post('/', async function (req, res) {
     }
 
     // Get dataset ready for training
-    await prepareDataset(datasetId, bucketName);
+    try {
+        await prepareDataset(datasetId, bucketName);
 
-    // Wait for model to be created
-    const modelResponse = await createTrainingPipelineImageClassification();
+        // Wait for model to be created
+        const modelResponse = await createTrainingPipelineImageClassification();
 
-    // Export model
-    const exportResponse = await exportModel(bucketName, modelResponse.modelId);
-    //const exportResponse = await exportModel(bucketName, '6898483287224745984');
-    //console.log(exportResponse);
+        // Export model
+        const exportResponse = await exportModel(bucketName, modelResponse.modelId);
+        //const exportResponse = await exportModel(bucketName, '6898483287224745984'); //DEBUG
 
-    // Storage is in exportResponse.metadata.outputInfo.artifactOutputUri
+        //console.log(exportResponse);
 
-    // Sends the response of the training to the frontend
-    // TODO: Save model uri to database
-    res.status(200).json(exportResponse.metadata.outputInfo.artifactOutputUri);
+        // Storage is in exportResponse.metadata.outputInfo.artifactOutputUri
+
+        // Sends the response of the training to the frontend
+        // TODO: Save model uri to database
+        res.status(200).json(exportResponse.metadata.outputInfo.artifactOutputUri);
+    } catch (err) {
+        res.status(500).json(err);
+    }
 });
 
 module.exports = router;
