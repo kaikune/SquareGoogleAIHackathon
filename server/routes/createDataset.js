@@ -32,6 +32,12 @@ async function createStorage(bucketName) {
         await Promise.resolve(storage.createBucket(fullName, metadata));
 
         console.log('Bucket created!');
+
+        // Make objects public
+        await storage.bucket(fullName).makePublic();
+
+        console.log(`Bucket ${bucketName} is now publicly readable`);
+
         return `Bucket ${fullName} created.`;
     } catch (err) {
         throw err;

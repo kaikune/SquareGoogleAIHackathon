@@ -42,6 +42,45 @@ async function prepareDataset(datasetId, bucketName) {
     await callImportData();
 }
 
+async function exportModel(bucketName, modelId) {
+    console.log('Exporting model');
+
+    // Imports the Google Cloud Model Service Client library
+    const { ModelServiceClient } = require('@google-cloud/aiplatform');
+
+    // Specifies the location of the api endpoint
+    const clientOptions = {
+        projectId: project,
+        keyFilename: process.env.SECRET_KEY,
+        apiEndpoint: 'us-central1-aiplatform.googleapis.com',
+    };
+
+    // Instantiates a client
+    const modelServiceClient = new ModelServiceClient(clientOptions);
+
+    // Configure the name resources
+    const name = `projects/${project}/locations/${location}/models/${modelId}`;
+    // Configure the outputConfig resources
+    const outputConfig = {
+        exportFormatId: 'tf-js',
+        artifactDestination: {
+            outputUriPrefix: `gs://${bucketName}/models`,
+        },
+    };
+    const request = {
+        name,
+        outputConfig,
+    };
+
+    // Export Model request
+    const [response] = await modelServiceClient.exportModel(request);
+    console.log(`Long running operation : ${response.name}`);
+
+    // Wait for operation to complete
+    await response.promise();
+    return response;
+}
+
 // res in the form of {datasetId: 'dataset id (number)', bucketName: 'bucket name', modelName: 'model name', pipelineName, 'pipeline name'}
 router.post('/', async function (req, res) {
     const datasetId = req.body.datasetId;
@@ -49,19 +88,20 @@ router.post('/', async function (req, res) {
     const modelDisplayName = req.body.modelName;
     const trainingPipelineDisplayName = req.body.pipelineName;
 
-    console.log(`trainModel request recieved: {datasetId: ${datasetId}, bucketName: ${bucketName}, modelName: ${modelDisplayName}, pipelineName: ${trainingPipelineDisplayName}}\n`);
+    console.log(
+        `trainModel request recieved: {datasetId: ${datasetId}, bucketName: ${bucketName}, modelName: ${modelDisplayName}, pipelineName: ${trainingPipelineDisplayName}}\n`
+    );
 
     // Imports the Google Cloud Pipeline Service Client library
     const aiplatform = require('@google-cloud/aiplatform');
-
-    // Get dataset ready for training
-    await prepareDataset(datasetId, bucketName);
 
     const { definition } = aiplatform.protos.google.cloud.aiplatform.v1.schema.trainingjob;
     const ModelType = definition.AutoMlImageClassificationInputs.ModelType;
 
     // Specifies the location of the api endpoint
     const clientOptions = {
+        projectId: project,
+        keyFilename: process.env.SECRET_KEY,
         apiEndpoint: 'us-central1-aiplatform.googleapis.com',
     };
 
@@ -73,11 +113,11 @@ router.post('/', async function (req, res) {
         // Configure the parent resource
         const parent = `projects/${project}/locations/${location}`;
 
-        // Values should match the input expected by your model.
+        // Instantiates training params
         const trainingTaskInputsMessage = new definition.AutoMlImageClassificationInputs({
             multiLabel: false,
-            modelType: ModelType.CLOUD,
-            budgetMilliNodeHours: 8 * 1000, // DO NOT GO TOO HIGH
+            modelType: ModelType.MOBILE_TF_LOW_LATENCY_1,
+            budgetMilliNodeHours: 2 * 1000, // 2 Hours DO NOT GO TOO HIGH
             disableEarlyStopping: false,
         });
 
@@ -93,6 +133,7 @@ router.post('/', async function (req, res) {
             trainingTaskInputs,
             inputDataConfig,
             modelToUpload,
+            modelId: modelDisplayName,
         };
         const request = { parent, trainingPipeline };
 
@@ -109,8 +150,22 @@ router.post('/', async function (req, res) {
         return response;
     }
 
+    // Get dataset ready for training
+    await prepareDataset(datasetId, bucketName);
+
+    // Wait for model to be created
+    const modelResponse = await createTrainingPipelineImageClassification();
+
+    // Export model
+    const exportResponse = await exportModel(bucketName, modelResponse.modelId);
+    //const exportResponse = await exportModel(bucketName, '6898483287224745984');
+    //console.log(exportResponse);
+
+    // Storage is in exportResponse.metadata.outputInfo.artifactOutputUri
+
     // Sends the response of the training to the frontend
-    res.status(200).json(createTrainingPipelineImageClassification());
+    // TODO: Save model uri to database
+    res.status(200).json(exportResponse.metadata.outputInfo.artifactOutputUri);
 });
 
 module.exports = router;

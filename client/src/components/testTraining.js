@@ -10,7 +10,7 @@ function TrainModel() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                datasetId: '5982874874798931968', // Needs to be the id of the dataset used. Given when database is created in 'name' field
+                datasetId: '5010801042728681472', // Needs to be the id of the dataset used. Given when database is created in 'name' field
                 bucketName: 'teststore', // Change to store name
                 modelName: 'testmodel',
                 pipelineName: 'testpipeline',
@@ -18,8 +18,11 @@ function TrainModel() {
         })
             .then((res) => {
                 //console.log(res); // Log the response to verify the request method
-                setMessage('Model Training...');
+                setMessage('Model Finished Training!');
                 return res.json();
+            })
+            .then((data) => {
+                console.log(data);
             })
             .catch((error) => {
                 console.error(error);
