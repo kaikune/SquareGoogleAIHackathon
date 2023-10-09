@@ -1,39 +1,44 @@
-import { Component } from 'react';
+import React, { useState } from 'react';
 
-class Test extends Component {
-    componentDidMount() {
+function TrainModel() {
+    const [message, setMessage] = useState('');
+    const [modelURL, setModelURL] = useState('');
+
+    const handleTraining = async () => {
         fetch('http://localhost:9000/api/trainModel', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                datasetId: '2964407593298034688', // Needs to be the id of the dataset used. Given when database is created in 'name' field
-                bucketName: 'testbucket',
+                datasetId: '5010801042728681472', // Needs to be the id of the dataset used. Given when database is created in 'name' field
+                bucketName: 'teststore', // Change to store name
                 modelName: 'testmodel',
                 pipelineName: 'testpipeline',
             }),
         })
             .then((res) => {
                 //console.log(res); // Log the response to verify the request method
-                return res.json();
+                setMessage('Model Finished Training!');
+                if (res.ok) return res.json();
+                throw res;
             })
             .then((data) => {
-                this.setState({ urls: data });
-                console.log(data);
+                // Sets the url of the model to be accessible
+                setModelURL(`${data.replace('gs:/', 'https://storage.googleapis.com')}/model.json`);
+                console.log(modelURL);
             })
             .catch((error) => {
                 console.error(error);
             });
-    }
+    };
 
-    render() {
-        return (
-            <div>
-                <h1>Test trainModelL</h1>
-            </div>
-        );
-    }
+    return (
+        <div>
+            <button onClick={handleTraining}>Train Model</button>
+            {message && <div>{message}</div>}
+        </div>
+    );
 }
 
-export default Test;
+export default TrainModel;

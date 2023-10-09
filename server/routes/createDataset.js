@@ -4,24 +4,40 @@ var { Storage } = require('@google-cloud/storage');
 var router = express.Router();
 const project = process.env.PROJECT_ID;
 const location = process.env.LOCATION;
+const storage = new Storage({
+    projectId: project,
+    keyFilename: process.env.SECRET_KEY,
+}); // Creates a client
 
 // Create image storage bucket
 async function createStorage(bucketName) {
     // Add project to front of name because buckets are globally identifyable and dont want to conflict with other buckets
     const fullName = `${project}-${bucketName}`;
-
-    // Creates a client
-    const storage = new Storage({
-        projectId: project,
-        keyFilename: './avid-poet-398520-23056db53b7a.json',
-    });
+    const metadata = {
+        cors: [
+            {
+                maxAgeSeconds: 3600,
+                method: ['*'],
+                origin: ['*'],
+                responseHeader: ['Content-Type'],
+            },
+        ],
+    };
 
     //storage.getBuckets().then((x) => console.log(x));
 
     try {
         console.log(`Creating new storage bucket: ${bucketName} ...`);
-        await storage.createBucket(fullName, null);
+
+        await Promise.resolve(storage.createBucket(fullName, metadata));
+
         console.log('Bucket created!');
+
+        // Make objects public
+        await storage.bucket(fullName).makePublic();
+
+        console.log(`Bucket ${bucketName} is now publicly readable`);
+
         return `Bucket ${fullName} created.`;
     } catch (err) {
         throw err;
@@ -29,13 +45,12 @@ async function createStorage(bucketName) {
 }
 
 async function createDataset(datasetName) {
-    // Specifies the location of the api endpoint
-    const clientOptions = {
-        apiEndpoint: 'us-central1-aiplatform.googleapis.com',
-    };
-
     // Instantiates a client
-    const datasetServiceClient = new DatasetServiceClient(clientOptions);
+    const datasetServiceClient = new DatasetServiceClient({
+        projectId: project,
+        keyFilename: process.env.SECRET_KEY,
+        apiEndpoint: 'us-central1-aiplatform.googleapis.com',
+    });
 
     // Get parent directory
     const parent = `projects/${project}/locations/${location}`;
