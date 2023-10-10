@@ -1,7 +1,9 @@
+// DO NOT USE
+
 const express = require('express');
 const router = express.Router();
-const automl = require('@tensorflow/tfjs-automl');
-const tf = require('@tensorflow/tfjs-node');
+// const automl = require('@tensorflow/tfjs-automl');
+// const tf = require('@tensorflow/tfjs-node');
 const util = require('util');
 const fs = require('fs');
 const readImg = util.promisify(fs.readFile);
