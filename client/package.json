@@ -10,6 +10,7 @@
     "proxy": "https://localhost:9000/"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.11.0",
     "@tensorflow/tfjs-automl": "^1.3.0",
     "@tensorflow/tfjs-node": "^4.11.0",
     "@testing-library/jest-dom": "^5.17.0",

@@ -1,4 +1,4 @@
-FROM node:18.17.1
+FROM node:20.8.1
 
 WORKDIR ./client
 
@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE $PORT
 
 CMD ["npm", "start"]

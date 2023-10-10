@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+    server:
+        depends_on:
+            - client
+        build: ./server
+        ports:
+            - 9000:9000
+    client:
+        build: ./client
+        ports:
+            - 3000:3000

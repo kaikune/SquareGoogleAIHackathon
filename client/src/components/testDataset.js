@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function CreateStorage() {
-    const [storeName, setStoreName] = useState('');
+    const [storeName, setStoreName] = useState(''); // TODO: Find way to export to root so name can be shared across components
     const [message, setMessage] = useState('');
 
     const handleName = (e) => {

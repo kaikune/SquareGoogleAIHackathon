@@ -155,7 +155,7 @@ router.post('/', async function (req, res) {
         await prepareDataset(datasetId, bucketName);
 
         // Wait for model to be created
-        const modelResponse = await createTrainingPipelineImageClassification();
+        const modelResponse = await createTrainingPipelineImageClassification(); // COMMENT OUT UNLESS ACTUALLY TRAINING MODEL
 
         // Export model
         const exportResponse = await exportModel(bucketName, modelResponse.modelId);
