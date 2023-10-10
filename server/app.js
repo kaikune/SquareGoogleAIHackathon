@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 require('dotenv').config();
-require('./data/db');
+
 var indexRouter = require('./routes/index');
 var testServerRouter = require('./routes/testServer');
 var createDataset = require('./routes/createDataset');
