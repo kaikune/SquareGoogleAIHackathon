@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { BASE_URL } from '../apiconfig';
 
 function TrainModel() {
     const [message, setMessage] = useState('');
     const [modelURL, setModelURL] = useState('');
 
     const handleTraining = async () => {
-        fetch('http://localhost:9000/api/trainModel', {
+        fetch(`${BASE_URL}/api/trainModel`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

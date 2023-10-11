@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BASE_URL } from '../apiconfig.js';
 
 function FileUpload() {
     const [files, setFiles] = useState([]);
@@ -16,7 +17,7 @@ function FileUpload() {
 
     async function getUrls(fileNames) {
         try {
-            const response = await fetch('http://localhost:9000/api/getSignedUrls', {
+            const response = await fetch(`${BASE_URL}/api/getSignedUrls`, {
                 mode: 'cors',
                 method: 'POST',
                 headers: {

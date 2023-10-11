@@ -1,4 +1,5 @@
 import { CreditCard, PaymentForm } from 'react-square-web-payments-sdk';
+import { BASE_URL } from '../apiconfig';
 
 export default function Payment() {
     return (
@@ -7,7 +8,7 @@ export default function Payment() {
                 applicationId="sandbox-sq0idb-Os9kKkQZ44Ruc2n3kB1mIQ"
                 cardTokenizeResponseReceived={async (token, verifiedBuyer) => {
                     // Sends card token (sourceId) to backend for processing
-                    const response = await fetch('http://localhost:9000/api/processPayment', {
+                    const response = await fetch(`${BASE_URL}/api/processPayment`, {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',

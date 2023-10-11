@@ -5,9 +5,9 @@
   "options": {
     "allowedHosts": [
       "localhost",
-      ".localhost"
-    ],
-    "proxy": "https://localhost:9000/"
+      ".localhost",
+      "*"
+    ]
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.11.0",
