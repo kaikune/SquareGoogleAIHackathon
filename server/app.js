@@ -10,6 +10,7 @@ var testServerRouter = require('./routes/testServer');
 var createDataset = require('./routes/createDataset');
 var getSignedUrls = require('./routes/getSignedURLs');
 var trainModel = require('./routes/trainModel');
+var processPayment = require('./routes/processPayment');
 //var queryModel = require('./routes/queryModel');
 
 var app = express();
@@ -30,5 +31,6 @@ app.use('/api/testServer', testServerRouter);
 app.use('/api/createDataset', createDataset);
 app.use('/api/getSignedUrls', getSignedUrls);
 app.use('/api/trainModel', trainModel);
+app.use('/api/processPayment', processPayment);
 //app.use('/api/queryModel', queryModel);
 module.exports = app;
