@@ -16,7 +16,7 @@ var processPayment = require('./routes/processPayment');
 var app = express();
 
 const corsOptions = {
-    origin: '*',
+    origin: true,
 };
 
 app.use(cors(corsOptions));
