@@ -16,7 +16,7 @@ var processPayment = require('./routes/processPayment');
 var app = express();
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: '*',
 };
 
 app.use(cors(corsOptions));
