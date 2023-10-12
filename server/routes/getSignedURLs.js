@@ -4,6 +4,7 @@ const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
 const project = process.env.PROJECT_ID;
 
+// TODO: Update to create the item in catalog at some point (take in price as well and inventory size)
 // req in the form of {bucketName: 'bucket name', label: 'product name', fileNames: ['filename.jpeg']}
 router.post('/', async function (req, res) {
     const label = req.body.label;
