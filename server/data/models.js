@@ -17,7 +17,19 @@ const getModelById = async (id) => {
   return model;
 }
 const addModel = async (modelID, artifactOutputUri) =>{
-  //todo add error checking
+  if(!modelID || !artifactOutputUri){
+    throw "addModel missing parameter"
+  }
+  if(isNaN(modelID)){
+    throw "addModel modelID must be int"
+  }
+  if(typeof artifactOutputUri !== 'string'){
+    throw "addModel artifactOutputUri must be a string"
+  }
+  artifactOutputUri = artifactOutputUri.trim();
+  if(artifactOutputUri.length === 0){
+    throw "addModel artifactOutputUri must be a string"
+  }
   let newModel = {
     modelID: modelID,
     artifactOutputUri: artifactOutputUri
@@ -34,13 +46,36 @@ const addModel = async (modelID, artifactOutputUri) =>{
   return model;
 }
 const updateModel= async (id, modelID, artifactOutputUri)=> {
-    //todo add error checking
+  if (!id) throw 'You must provide an id to search for';
+  if (typeof id !== 'string'){
+    throw 'Id must be a string';
+  } 
+  if (id.trim().length === 0){
+    throw 'id cannot be an empty string or just spaces';
+  }
+  id = id.trim();
+  if (!ObjectId.isValid(id)){
+    throw 'invalid object ID';
+  } 
+  if(!modelID || !artifactOutputUri){
+    throw "addModel missing parameter"
+  }
+  if(isNaN(modelID)){
+    throw "addModel modelID must be int"
+  }
+  if(typeof artifactOutputUri !== 'string'){
+    throw "addModel artifactOutputUri must be a string"
+  }
+  artifactOutputUri = artifactOutputUri.trim();
+  if(artifactOutputUri.length === 0){
+    throw "addModel artifactOutputUri must be a string"
+  }
     const updatedModel = {
         modelID: modelID,
         artifactOutputUri: artifactOutputUri
     };
     const modelCollection = await models();
-    const updatedInfo = await ModelCollection.findOneAndUpdate(
+    const updatedInfo = await modelCollection.findOneAndUpdate(
         {_id: new ObjectId(id)},
         {$set: updatedModel},
         {returnDocument: 'after'}
@@ -52,8 +87,8 @@ const updateModel= async (id, modelID, artifactOutputUri)=> {
     return updatedInfo;
     }
 const getAllModels = async () =>{
-    const ModelCollection = await models();
-    let modelList = await ModelCollection.find({}).toArray();
+    const modelCollection = await models();
+    let modelList = await modelCollection.find({}).toArray();
     if (!modelList) throw 'Could not get all Models';
     modelList = modelList.map((element) => {
       element._id = element._id.toString();
