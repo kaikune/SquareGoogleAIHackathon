@@ -6,6 +6,7 @@ import TestM from './components/testModel';
 import TestPay from './components/testPayment';
 
 import Shop from './shop';
+import Login from './login';
 
 function App() {
     return (
