@@ -12,7 +12,10 @@ function App() {
     return (
         // Can get rid of test for actual development
         <div>
-            <Shop />
+            <TestDS />
+            <TestUL />
+            <TestTM />
+            <TestM />
         </div>
     );
 }
