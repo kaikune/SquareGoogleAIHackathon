@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BASE_URL } from '../apiconfig';
 
 function CreateStorage() {
     const [storeName, setStoreName] = useState(''); // TODO: Find way to export to root so name can be shared across components
@@ -10,7 +11,7 @@ function CreateStorage() {
 
     const storageHandler = async () => {
         setMessage('Creating Dataset...');
-        fetch('http://localhost:9000/api/createDataset', {
+        fetch(`${BASE_URL}/api/createDataset`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

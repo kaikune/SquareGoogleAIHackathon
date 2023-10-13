@@ -10,12 +10,14 @@ var testServerRouter = require('./routes/testServer');
 var createDataset = require('./routes/createDataset');
 var getSignedUrls = require('./routes/getSignedURLs');
 var trainModel = require('./routes/trainModel');
-var queryModel = require('./routes/queryModel');
+var processPayment = require('./routes/processPayment');
+var getPrice = require('./routes/getPrice');
+//var queryModel = require('./routes/queryModel');
 
 var app = express();
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: true,
 };
 
 app.use(cors(corsOptions));
@@ -25,10 +27,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// TODO: Cleanup like in 546 lecture
 app.use('/', indexRouter);
 app.use('/api/testServer', testServerRouter);
 app.use('/api/createDataset', createDataset);
 app.use('/api/getSignedUrls', getSignedUrls);
 app.use('/api/trainModel', trainModel);
-app.use('/api/queryModel', queryModel);
+app.use('/api/processPayment', processPayment);
+app.use('/api/getPrice', getPrice);
+//app.use('/api/queryModel', queryModel);
 module.exports = app;

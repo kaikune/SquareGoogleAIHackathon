@@ -6,7 +6,7 @@ const project = process.env.PROJECT_ID;
 const location = process.env.LOCATION;
 const storage = new Storage({
     projectId: project,
-    keyFilename: process.env.SECRET_KEY,
+    keyFilename: process.env.SECRET_KEY, // Overridden in production
 }); // Creates a client
 
 // Create image storage bucket
