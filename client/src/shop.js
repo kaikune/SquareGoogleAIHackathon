@@ -1,47 +1,21 @@
 import { React, useState } from "react";
+import TestM from './components/testModel';
 
 function Shop() {
 
     const [cart, setCart] = useState([]);
-    const items = 
-    [
-        {
-            id: 0,
-            image: "https://purepng.com/public/uploads/large/purepng.com-sandwichfood-slice-salad-tasty-bread-vegetable-health-delicious-breakfast-sandwich-941524616303zjrlx.png",
-            name: "Sandwich",
-            price: 5.00
-        },
-        {
-            id: 1,
-            image: "https://purepng.com/public/uploads/large/purepng.com-ice-water-bottle-aquafinabottle-water-drink-aquafina-9415246348499t1u0.png",
-            name: "Bottled Water",
-            price: 3.00
-        },
-        {
-            id: 2,
-            image: "https://purepng.com/public/uploads/large/purepng.com-tomato-saladsalad-9415246422565bqud.png",
-            name: "Salad",
-            price: 5.00
-        },
-        {
-            id: 3,
-            image: "https://purepng.com/public/uploads/large/purepng.com-bananafruitsyellowfruitbanana-981524754691bawpo.png",
-            name: "Banana",
-            price: 2.00
-        },
-        {
-            id: 4,
-            image: "https://purepng.com/public/uploads/large/purepng.com-fresh-applefoodsweettastyhealthyfruitappleleaf-981524677946vfurf.png",
-            name: "Apple",
-            price: 2.00
-        },
-        {
-            id: 5,
-            image: "https://freepngimg.com/thumb/orange/2-2-orange-free-png-image.png",
-            name: "Orange",
-            price: 2.00
-        }
-    ];
+
+    // ITEM FORMAT:
+    /*
+    {
+        id:         int,
+        quantity:   int,
+        name:       string,
+        price:      float
+    }
+    */
+
+    const [prediction, setPrediction] = useState('');
 
     function calculateTotalPrice() {
         let totalPrice = 0;
@@ -151,24 +125,38 @@ function Shop() {
         
             <div className="flex flex-row w-screen h-screen bg-white">
 
-                <div className="grid grid-cols-3 w-3/5 h-full bg-tan p-16">
-                    {
-                        items.map((item) => (
-                            <ItemCard 
-                                id={item.id} 
-                                name={item.name} 
-                                price={item.price} 
-                                image={item.image}
-                            />
-                        ))
-                    }
+                <div className="flex flex-col w-full h-full">
+                    <div className="flex flex-col justify-center items-center w-full h-full bg-silver-500">
+                        <div className="w-3/4 h-3/4">
+                            <TestM setPrediction={setPrediction} />
+                            <button 
+                                onClick=
+                                {() => addItem(
+                                    {
+                                        // TODO: make this not hardcoded
+                                        id: 0,
+                                        quantity: 1,
+                                        name: prediction,
+                                        price: 1.00
+                                    }
+                                )}
+                            >Add Item</button>
+                            <h1>{prediction}</h1>
+                        </div>
+                    </div>
+                    <div className="w-full h-1/4">
+
+                    </div>
                 </div>
                 
                 <div className="w-2/5 h-full bg-white">
 
-                    <div className="flex flex-row justify-between items-center w-full h-1/6 bg-silver-500 px-16">
-                        <h1 className="text-white font-bold text-2xl">welcome</h1>
-                        <h1 className="text-white font-bold text-3xl">JOHN SMITH</h1>
+                    <div className="flex flex-row justify-start items-center w-full h-1/6 px-12 gap-5 object-fill">
+                        <img 
+                            src="/bad.jpg"
+                            className="w-20 h-20 rounded-full"
+                        />
+                        <h1 className="text-silver-500 font-bold text-3xl">JOHN SMITH</h1>
                     </div>
 
                     <div className="w-full h-4/6"><Tray /></div>
