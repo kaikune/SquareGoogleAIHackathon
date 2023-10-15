@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import * as automl from '@tensorflow/tfjs-automl';
 import * as tf from '@tensorflow/tfjs';
 
@@ -65,8 +65,8 @@ function TestModel({ setPrediction }) {
 
     return (
         <div>
-            <video autoPlay playsInline muted id="webcam" className='w-full h-5/6 object-cover'></video>
-            {loading ? (<></>) : (<button onClick={queryModel}>Test Model</button>)}
+            <video autoPlay playsInline muted id="webcam" className="w-full h-5/6 object-cover"></video>
+            {loading ? <></> : <button onClick={queryModel}>Test Model</button>}
             {message && <div>{message}</div>}
         </div>
     );
