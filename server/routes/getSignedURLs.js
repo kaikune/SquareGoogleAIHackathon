@@ -3,6 +3,7 @@ var router = express.Router();
 const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
 const project = process.env.PROJECT_ID;
+const crypto = require('crypto');
 
 // TODO: Update to create the item in catalog at some point (take in price as well and inventory size)
 // req in the form of {bucketName: 'bucket name', label: 'product name', fileNames: ['filename.jpeg']}
@@ -10,6 +11,7 @@ router.post('/', async function (req, res) {
     const label = req.body.label;
     const bucketName = `${project}-${req.body.bucketName}`;
     const fileNames = req.body.fileNames;
+    const price = req.body.price;
 
     //console.log(`Recieved input of {${bucketName}, ${label}, ${fileNames}}`);
 

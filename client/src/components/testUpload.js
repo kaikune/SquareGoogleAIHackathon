@@ -5,6 +5,7 @@ function FileUpload() {
     const [files, setFiles] = useState([]);
     const [message, setMessage] = useState('');
     const [label, setLabel] = useState('');
+    const [price, setPrice] = useState(0);
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
@@ -13,6 +14,10 @@ function FileUpload() {
 
     const handleLabelChange = (e) => {
         setLabel(e.target.value);
+    };
+
+    const handlePriceChange = (e) => {
+        setPrice(e.target.price);
     };
 
     async function getUrls(fileNames) {
@@ -27,6 +32,7 @@ function FileUpload() {
                     bucketName: 'teststore', // Change to store name
                     label: label, // Label for all the images
                     fileNames: fileNames, // Send an array of file names
+                    price: price,
                 }),
             });
 
@@ -75,6 +81,7 @@ function FileUpload() {
         <div>
             <h1>Label</h1>
             <input type="text" value={label} onChange={handleLabelChange} />
+            <input type="number" value={price} onChange={handlePriceChange} />
 
             <h1>Upload Multiple Files</h1>
             <input type="file" multiple onChange={handleFileChange} />
