@@ -12,7 +12,7 @@ var getSignedUrls = require('./routes/getSignedURLs');
 var trainModel = require('./routes/trainModel');
 var processPayment = require('./routes/processPayment');
 var getPrice = require('./routes/getPrice');
-//var queryModel = require('./routes/queryModel');
+var getStoreInfo = require('./routes/getStoreInfo');
 
 var app = express();
 
@@ -35,5 +35,6 @@ app.use('/api/getSignedUrls', getSignedUrls);
 app.use('/api/trainModel', trainModel);
 app.use('/api/processPayment', processPayment);
 app.use('/api/getPrice', getPrice);
-//app.use('/api/queryModel', queryModel);
+app.use('/api/getStoreInfo', getStoreInfo);
+
 module.exports = app;

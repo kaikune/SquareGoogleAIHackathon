@@ -22,14 +22,13 @@ async function getItemPrice(client, label) {
 
 // req in the form {label: 'label'}
 // Returns JSON of {price: price}
-router.get('/', async function (req, res, next) {
+router.post('/', async function (req, res) {
     const client = new Client({
         accessToken: process.env.SQUARE_ACCESS_TOKEN,
         environment: Environment.Sandbox,
     });
     const label = req.body.label;
     let itemPrice = undefined;
-    // TODO: get price of item from database
 
     try {
         itemPrice = await getItemPrice(client, label);
