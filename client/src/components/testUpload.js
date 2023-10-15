@@ -17,7 +17,7 @@ function FileUpload() {
     };
 
     const handlePriceChange = (e) => {
-        setPrice(e.target.price);
+        setPrice(e.target.value);
     };
 
     async function getUrls(fileNames) {
@@ -32,7 +32,7 @@ function FileUpload() {
                     bucketName: 'teststore', // Change to store name
                     label: label, // Label for all the images
                     fileNames: fileNames, // Send an array of file names
-                    price: price,
+                    price: price * 100,
                 }),
             });
 

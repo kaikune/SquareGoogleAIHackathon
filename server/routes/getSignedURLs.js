@@ -3,6 +3,7 @@ var router = express.Router();
 const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
 const project = process.env.PROJECT_ID;
+const { Client, Environment } = require('square');
 const crypto = require('crypto');
 
 // TODO: Update to create the item in catalog at some point (take in price as well and inventory size)
@@ -13,7 +14,12 @@ router.post('/', async function (req, res) {
     const fileNames = req.body.fileNames;
     const price = req.body.price;
 
-    //console.log(`Recieved input of {${bucketName}, ${label}, ${fileNames}}`);
+    //console.log(`Recieved input of {${bucketName}, ${label}, ${fileNames}, ${price}}`);
+
+    const client = new Client({
+        accessToken: process.env.SQUARE_ACCESS_TOKEN,
+        environment: Environment.Sandbox,
+    });
 
     // Creates a client
     const storage = new Storage({
@@ -21,8 +27,32 @@ router.post('/', async function (req, res) {
         keyFilename: process.env.SECRET_KEY,
     });
 
-    //console.log(`bucketName: ${bucketName}, label: ${label}, product: ${fileName}`);
-
+    let catalogItem = {
+        idempotencyKey: crypto.randomUUID(),
+        object: {
+            type: 'ITEM',
+            id: '#' + label,
+            itemData: {
+                name: label,
+                variations: [
+                  {
+                    type: 'ITEM_VARIATION',
+                    id: '#' + label + '_var',
+                    itemVariationData: {
+                        pricingType: 'FIXED_PRICING',
+                        priceMoney: {
+                            amount: price,
+                            currency: 'USD'
+                        },
+                        sellable: true
+                    }
+                  }
+                ]
+              }
+            }
+          }
+    const response = await client.catalogApi.upsertCatalogObject(catalogItem);
+    
     // Download csv from gcs to update it. Throws error if file not found
     async function downloadCSV() {
         const options = {
