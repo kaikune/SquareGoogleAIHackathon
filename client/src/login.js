@@ -4,7 +4,7 @@ import { Store } from 'lucide-react';
 function Login() {
     return (
         <>
-            <div className="flex flex-col justify-center items-center bg-gray-200 w-screen h-screen">
+            <div className="flex flex-col justify-center items-center bg-gray-200 w-full h-full">
                 
                 <div className="flex flex-col justify-evenly items-center w-3/4 md:w-1/2 h-3/4 bg-white rounded-2xl drop-shadow-xl">
                     <div className="padding"/>
