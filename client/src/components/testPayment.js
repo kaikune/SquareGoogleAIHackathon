@@ -1,9 +1,9 @@
 import { CreditCard, PaymentForm } from 'react-square-web-payments-sdk';
 import { BASE_URL } from '../apiconfig';
 
-export default function Payment() {
+export default function Payment({ price }) {
     return (
-        <div>
+        <div className='w-full h-full p-5'>
             <PaymentForm
                 applicationId="sandbox-sq0idb-Os9kKkQZ44Ruc2n3kB1mIQ"
                 cardTokenizeResponseReceived={async (token, verifiedBuyer) => {
@@ -15,7 +15,7 @@ export default function Payment() {
                         },
                         body: JSON.stringify({
                             sourceId: token.token,
-                            price: 100, // REPLACE WITH TOTAL COST (Price is in cents)
+                            price: price, // REPLACE WITH TOTAL COST (Price is in cents)
                         }),
                     });
                     console.log(await response.json());
@@ -26,11 +26,11 @@ export default function Payment() {
                 <CreditCard
                     buttonProps={{
                         css: {
-                            backgroundColor: '#771520',
+                            backgroundColor: '#ececec',
                             fontSize: '14px',
-                            color: '#fff',
+                            color: '#363636',
                             '&:hover': {
-                                backgroundColor: '#530f16',
+                                backgroundColor: '#dbdbdb',
                             },
                         },
                     }}

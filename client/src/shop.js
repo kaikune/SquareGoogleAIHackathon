@@ -1,9 +1,12 @@
 import { React, useState } from "react";
 import TestM from './components/testModel';
+import Payment from "./components/testPayment";
+import { X } from 'lucide-react';
 
 function Shop() {
 
     const [cart, setCart] = useState([]);
+    const [charging, setCharging] = useState(false);
 
     // ITEM FORMAT:
     /*
@@ -123,11 +126,11 @@ function Shop() {
     return (
         <>
         
-            <div className="flex flex-row w-screen h-screen bg-white">
+            <div className="flex flex-row w-full h-full bg-white">
 
                 <div className="flex flex-col w-full h-full">
                     <div className="flex flex-col justify-center items-center w-full h-full bg-silver-500">
-                        <div className="w-3/4 h-3/4">
+                        <div className="w-3/4 h-full p-10">
                             <TestM setPrediction={setPrediction} />
                             <button 
                                 onClick=
@@ -159,17 +162,43 @@ function Shop() {
                         <h1 className="text-silver-500 font-bold text-3xl">JOHN SMITH</h1>
                     </div>
 
-                    <div className="w-full h-4/6"><Tray /></div>
+                    <div className="w-full h-1/2"><Tray /></div>
 
-                    <div className="flex flex-col justify-start items-center w-full h-1/6 bg-silver-500 p-5">
-                        <div className="flex flex-row justify-between items-center w-full px-5">
-                            <h1 className="text-white font-bold text-2xl">subtotal</h1>
-                            <h1 className="text-white font-bold text-2xl">{calculateTotalPrice()}</h1>
-                        </div>
-                        <div className="flex flex-row justify-between items-center w-full px-5">
-                            <h1 className="text-white font-bold text-5xl">total</h1>
-                            <h1 className="text-white font-bold text-5xl">{calculateTotalPrice()}</h1>
-                        </div>
+                    <div className="flex flex-col justify-start items-center w-full h-1/3 bg-silver-500 p-5 gap-3">
+                        {
+                            charging ? (
+                                <>
+                                    <div className="flex flex-row w-full h-1 justify-between">
+                                        <X
+                                            className="cursor-pointer"
+                                            color="white" 
+                                            onClick={() => setCharging(false)}
+                                        />
+                                        <h1 className="text-white font-bold">${calculateTotalPrice()}</h1>
+                                    </div>
+                                    <Payment price={calculateTotalPrice()}/>
+                                </>
+                            ) : (
+                                <>
+
+                                    <div className="flex flex-row justify-between items-center w-full px-5">
+                                        <h1 className="text-white font-bold text-2xl">subtotal</h1>
+                                        <h1 className="text-white font-bold text-2xl">{calculateTotalPrice()}</h1>
+                                    </div>
+                                    <div className="flex flex-row justify-between items-center w-full px-5 pb-3">
+                                        <h1 className="text-white font-bold text-5xl">total</h1>
+                                        <h1 className="text-white font-bold text-5xl">{calculateTotalPrice()}</h1>
+                                    </div>
+                                    <div className="flex flex-row justify-center items-center w-full bg-silver-300 p-2 rounded-full">
+                                        <button 
+                                            className="text-silver-500 font-bold text-5xl"
+                                            onClick={() => setCharging(true)}
+                                        >charge</button>
+                                    </div>
+
+                                </>
+                            )
+                        }
                     </div>
 
                 </div>
