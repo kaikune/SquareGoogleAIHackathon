@@ -15,11 +15,7 @@ async function getItemPrice(client, label) {
     // Get catalog item matching label
     const searchResponse = await catalogApi.searchCatalogItems(filter);
 
-    console.log(searchResponse.result);
-    //if (!searchResponse.ok) throw response.errors; // Throw if there are errors in request
-
     let itemPrice = Number(searchResponse.result.items[0].itemData.variations[0].itemVariationData.priceMoney.amount); // gets the price from response
-    console.log(itemPrice);
     return itemPrice / 100;
 }
 

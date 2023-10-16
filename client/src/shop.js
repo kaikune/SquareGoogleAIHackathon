@@ -7,6 +7,7 @@ import { BASE_URL } from './apiconfig';
 function Shop() {
     const [cart, setCart] = useState([]);
     const [charging, setCharging] = useState(false);
+    const [priceCache, setPriceCache] = useState({});
 
     // ITEM FORMAT:
     /*
@@ -97,24 +98,30 @@ function Shop() {
     }
 
     async function getPrice(itemName) {
-        const response = await fetch(`${BASE_URL}/api/getPrice`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                label: itemName,
-            }),
-        });
+        if (!priceCache[itemName]) {
+            const response = await fetch(`${BASE_URL}/api/getPrice`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    label: itemName,
+                }),
+            });
 
-        let data = undefined;
+            let data = undefined;
 
-        if (response.ok) {
-            data = await response.json();
-            console.log(data.price);
-            return data.price;
+            if (response.ok) {
+                data = await response.json();
+                let newCache = { ...priceCache };
+                newCache[itemName] = data.price;
+                setPriceCache(newCache);
+                return data.price;
+            } else {
+                console.log('Error fetching price');
+            }
         } else {
-            console.log('Error fetching price');
+            return priceCache[itemName];
         }
     }
 
