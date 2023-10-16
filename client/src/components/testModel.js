@@ -65,7 +65,7 @@ function TestModel({ setPrediction }) {
 
     return (
         <div>
-            <video autoPlay playsInline muted id="webcam" className="w-full h-5/6 object-cover"></video>
+            <video autoPlay playsInline muted id="webcam" className="w-full h-2/3 object-cover"></video>
             {loading ? <></> : <button onClick={queryModel}>Test Model</button>}
             {message && <div>{message}</div>}
         </div>
