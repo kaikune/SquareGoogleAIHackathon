@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import * as automl from '@tensorflow/tfjs-automl';
 import * as tf from '@tensorflow/tfjs';
 
-function TestModel({ setPrediction }) {
+function TestModel({ setModelData }) {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const ms = 100; //Delay between model scans in ms
     let model = undefined;
 
     const queryModel = async () => {
@@ -35,21 +36,60 @@ function TestModel({ setPrediction }) {
         const predict = async () => {
             const img = await webcam.capture();
             const result = await model.classify(img);
+            const reqProb = .4;
 
-            const pred = Object.keys(result).reduce((a, b) => (result[a].prob > result[b].prob ? a : b));
+            if(resultdict === undefined){
+                resultdict = {...result}
+            }
+            Object.keys(result).forEach((key) => {
+                resultdict[key].label = result[key].label
+                resultdict[key].prob = result[key].prob
+            })
 
-            setMessage(`prediction: ${result[pred].label}, probability: ${result[pred].prob}`);
+            const pred = Object.keys(resultdict).reduce((a, b) => (resultdict[a].prob > resultdict[b].prob ? a : b));
+
+            {
+                //console.log(result[pred])
+                if(resultdict[pred].label === currentLabel && resultdict[pred].label !== "Not Valid"){
+                    if(resultdict[pred].prob >= reqProb){
+                        if(resultdict[pred].successfulChecks !== undefined){
+                            resultdict[pred].successfulChecks++;
+                            console.log("Check Passed")
+                        }
+                        else{
+                            resultdict[pred].successfulChecks = 0;
+                            console.log("Undefined Found")
+                        }
+                    }
+                    else{
+                        if(resultdict[pred].successfulChecks === undefined){
+                            resultdict[pred].successfulChecks = 0;
+                        }
+                        console.log("Check Failed")
+                    }
+                }
+                else{
+                    currentLabel = resultdict[pred].label
+                    resultdict[pred].successfulChecks = 0;
+                    console.log("Check Reset")
+                }
+            }
+
+            setMessage(`prediction: ${resultdict[pred].label}, probability: ${resultdict[pred].prob}, checks: ${resultdict[pred].successfulChecks}`);
 
             // Set the prediction state
-            setPrediction(result[pred].label);
+            setModelData(resultdict[pred]);
 
             img.dispose();
         };
 
         // Continuously make predictions and update state
+        let currentLabel = ""
+        let resultdict = undefined;
         const predictLoop = async () => {
             while (true) {
                 await predict();
+                await new Promise(r => setTimeout(r, ms));
                 await tf.nextFrame();
             }
         };
