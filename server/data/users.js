@@ -31,24 +31,24 @@ const areAllFilled = (...args) => {
     }
     return true;
 };
-const addUser = async (name, pass, databaseID) => {
-    if (!name || !pass || !databaseID) {
+const addUser = async (name, pass, datasetID) => {
+    if (!name || !pass || !datasetID) {
         throw 'addUser missing parameter';
     }
-    if (!areAllStrings(name, pass, databaseID)) {
+    if (!areAllStrings(name, pass, datasetID)) {
         throw 'Invalid Input: expected string';
     }
-   
+
     name = name.trim();
     pass = pass.trim();
-    databaseID = databaseID.trim();
-    if (!areAllFilled(name, pass, databaseID)) {
+    datasetID = datasetID.trim();
+    if (!areAllFilled(name, pass, datasetID)) {
         throw 'Invalid Input: expected string';
     }
     let newUser = {
         name: name,
         pass: pass,
-        databaseID : databaseID.trim()
+        datasetID: datasetID.trim(),
     };
     const UserCollection = await users();
     const insertInfo = await UserCollection.insertOne(newUser);
@@ -61,7 +61,7 @@ const addUser = async (name, pass, databaseID) => {
 
     return user;
 };
-const updateUser = async (id, name, pass, databaseID) => {
+const updateUser = async (id, name, pass, datasetID) => {
     if (!id) throw 'You must provide an id to search for';
     if (typeof id !== 'string') {
         throw 'Id must be a string';
@@ -73,24 +73,24 @@ const updateUser = async (id, name, pass, databaseID) => {
     if (!ObjectId.isValid(id)) {
         throw 'invalid object ID';
     }
-    if (!name || !pass || !databaseID) {
-      throw 'addUser missing parameter';
-  }
-  if (!areAllStrings(name, pass, databaseID)) {
-      throw 'Invalid Input: expected string';
-  }
- 
-  name = name.trim();
-  pass = pass.trim();
-  databaseID = databaseID.trim();
-  if (!areAllFilled(name, pass, databaseID)) {
-      throw 'Invalid Input: expected string';
-  }
-  let updatedUser = {
-    name: name,
-    pass: pass,
-    databaseID : databaseID.trim()
-};
+    if (!name || !pass || !datasetID) {
+        throw 'addUser missing parameter';
+    }
+    if (!areAllStrings(name, pass, datasetID)) {
+        throw 'Invalid Input: expected string';
+    }
+
+    name = name.trim();
+    pass = pass.trim();
+    datasetID = datasetID.trim();
+    if (!areAllFilled(name, pass, datasetID)) {
+        throw 'Invalid Input: expected string';
+    }
+    let updatedUser = {
+        name: name,
+        pass: pass,
+        datasetID: datasetID.trim(),
+    };
     const userCollection = await users();
     const updatedInfo = await userCollection.findOneAndUpdate({ _id: new ObjectId(id) }, { $set: updatedUser }, { returnDocument: 'after' });
     if (!updatedInfo) {
