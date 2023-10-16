@@ -31,33 +31,24 @@ const areAllFilled = (...args) => {
     }
     return true;
 };
-const addUser = async (name, pass, squareUsername, squareAppID, squareAppToken, squareLocationID, datasetID) => {
-    if (!name || !pass || !squareUsername || !squareAppID || !squareAppToken || !squareLocationID || !datasetID) {
+const addUser = async (name, pass, databaseID) => {
+    if (!name || !pass || !databaseID) {
         throw 'addUser missing parameter';
     }
-    if (!areAllStrings(name, squareUsername, squareAppID, squareAppToken, squareLocationID)) {
+    if (!areAllStrings(name, pass, databaseID)) {
         throw 'Invalid Input: expected string';
     }
-    if (isNaN(datasetID)) {
-        throw 'addUser datasetID must be int';
-    }
+   
     name = name.trim();
     pass = pass.trim();
-    squareUsername = squareUsername.trim();
-    squareAppID = squareAppID.trim();
-    squareAppToken = squareAppToken.trim();
-    squareLocationID = squareLocationID.trim();
-    if (!areAllFilled(name, squareUsername, squareAppID, squareAppToken, squareLocationID)) {
+    databaseID = databaseID.trim();
+    if (!areAllFilled(name, pass, databaseID)) {
         throw 'Invalid Input: expected string';
     }
     let newUser = {
         name: name,
         pass: pass,
-        squareUsername: squareUsername,
-        squareAppID: squareAppID,
-        squareAppToken: squareAppToken,
-        squareLocationID: squareLocationID,
-        datasetID: datasetID,
+        databaseID : databaseID.trim()
     };
     const UserCollection = await users();
     const insertInfo = await UserCollection.insertOne(newUser);
@@ -70,7 +61,7 @@ const addUser = async (name, pass, squareUsername, squareAppID, squareAppToken, 
 
     return user;
 };
-const updateUser = async (id, name, pass, squareUsername, squareAppID, squareAppToken, squareLocationID, datasetID) => {
+const updateUser = async (id, name, pass, databaseID) => {
     if (!id) throw 'You must provide an id to search for';
     if (typeof id !== 'string') {
         throw 'Id must be a string';
@@ -82,33 +73,24 @@ const updateUser = async (id, name, pass, squareUsername, squareAppID, squareApp
     if (!ObjectId.isValid(id)) {
         throw 'invalid object ID';
     }
-    if (!name || !pass || !squareUsername || !squareAppID || !squareAppToken || !squareLocationID || !datasetID) {
-        throw 'addUser missing parameter';
-    }
-    if (!areAllStrings(name, squareUsername, squareAppID, squareAppToken, squareLocationID)) {
-        throw 'Invalid Input: expected string';
-    }
-    if (isNaN(datasetID)) {
-        throw 'addUser datasetID must be int';
-    }
-    name = name.trim();
-    pass = pass.trim();
-    squareUsername = squareUsername.trim();
-    squareAppID = squareAppID.trim();
-    squareAppToken = squareAppToken.trim();
-    squareLocationID = squareLocationID.trim();
-    if (!areAllFilled(name, squareUsername, squareAppID, squareAppToken, squareLocationID)) {
-        throw 'Invalid Input: expected string';
-    }
-    const updatedUser = {
-        name: name,
-        pass: pass,
-        squareUsername: squareUsername,
-        squareAppID: squareAppID,
-        squareAppToken: squareAppToken,
-        squareLocationID: squareLocationID,
-        datasetID: datasetID,
-    };
+    if (!name || !pass || !databaseID) {
+      throw 'addUser missing parameter';
+  }
+  if (!areAllStrings(name, pass, databaseID)) {
+      throw 'Invalid Input: expected string';
+  }
+ 
+  name = name.trim();
+  pass = pass.trim();
+  databaseID = databaseID.trim();
+  if (!areAllFilled(name, pass, databaseID)) {
+      throw 'Invalid Input: expected string';
+  }
+  let updatedUser = {
+    name: name,
+    pass: pass,
+    databaseID : databaseID.trim()
+};
     const userCollection = await users();
     const updatedInfo = await userCollection.findOneAndUpdate({ _id: new ObjectId(id) }, { $set: updatedUser }, { returnDocument: 'after' });
     if (!updatedInfo) {
