@@ -11,9 +11,11 @@ function Nav() {
                         <Tv2 color="white" size={100} />
                     </button>
                 </Link>
-                <button>
-                    <Store color="white" size={100} />
-                </button>
+                <Link to={'/items'}>
+                    <button>
+                        <Store color="white" size={100} />
+                    </button>
+                </Link>
                 <button>
                     <Contact color="white" size={100} />
                 </button>
