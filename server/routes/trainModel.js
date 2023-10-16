@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var models = require('../data/models');
+var users = require('../data/users');
 
 // Imports images from dataset into ai
 async function prepareDataset(datasetId, bucketName) {
@@ -33,7 +35,7 @@ async function prepareDataset(datasetId, bucketName) {
             }
 
             // Add a delay (e.g., 5 minutes) before the next status check.
-            await new Promise((resolve) => setTimeout(resolve, 30000)); // 30 sec in milliseconds.
+            await new Promise((resolve) => setTimeout(resolve, 300000)); // 5 min in milliseconds.
         }
     }
 
@@ -135,8 +137,21 @@ async function waitForTrainingCompletion(pipelineName) {
         }
 
         // Add a delay (e.g., 5 minutes) before the next status check.
-        await new Promise((resolve) => setTimeout(resolve, 30000)); // 30 sec in milliseconds.
+        await new Promise((resolve) => setTimeout(resolve, 300000)); // 5 min in milliseconds.
     }
+}
+
+async function saveUriToDB(storeName, exportResponse) {
+    const allUsers = users.getAllUsers();
+
+    console.log('Saving URI to db');
+
+    for (const user of allUsers) {
+        if (user.name === storeName) {
+            models.addModel(user._id, exportResponse.metadata.outputInfo.artifactOutputUri);
+        }
+    }
+    console.log('Done!');
 }
 
 // res in the form of {datasetId: 'dataset id (number)', bucketName: 'bucket name', modelName: 'model name', pipelineName, 'pipeline name'}
@@ -145,6 +160,7 @@ router.post('/', async function (req, res) {
     const location = process.env.LOCATION;
     const datasetId = req.body.datasetId;
     const bucketName = `${project}-${req.body.bucketName}`;
+    const storeName = req.body.bucketName;
     const modelDisplayName = req.body.modelName;
     const trainingPipelineDisplayName = req.body.pipelineName;
 
@@ -185,15 +201,15 @@ router.post('/', async function (req, res) {
 
         const trainingTaskDefinition = 'gs://google-cloud-aiplatform/schema/trainingjob/definition/automl_image_classification_1.0.0.yaml';
 
-        const modelToUpload = { displayName: 'foo' };
+        const modelToUpload = { displayName: modelDisplayName };
         const inputDataConfig = { datasetId };
         const trainingPipeline = {
-            displayName: 'bar',
+            displayName: trainingPipelineDisplayName,
             trainingTaskDefinition,
             trainingTaskInputs,
             inputDataConfig,
             modelToUpload,
-            modelId: 'foobar',
+            modelId: modelDisplayName,
         };
         const request = { parent, trainingPipeline };
 
@@ -212,7 +228,7 @@ router.post('/', async function (req, res) {
 
     // Get dataset ready for training
     try {
-        await prepareDataset(datasetId, bucketName);
+        //await prepareDataset(datasetId, bucketName);
 
         // Create training pipeline
         const pipelineName = await createTrainingPipelineImageClassification(); // COMMENT OUT UNLESS ACTUALLY TRAINING MODEL
@@ -221,14 +237,26 @@ router.post('/', async function (req, res) {
         const trainingResponse = await waitForTrainingCompletion(pipelineName);
 
         // Export model
-        const exportResponse = await exportModel(bucketName, trainingResponse);
-        //const exportResponse = await exportModel(bucketName, '6898483287224745984'); //DEBUG
+        if (trainingResponse) {
+            const exportResponse = await exportModel(bucketName, trainingResponse);
+            //const exportResponse = await exportModel(bucketName, '6898483287224745984'); //DEBUG
 
-        // Storage is in exportResponse.metadata.outputInfo.artifactOutputUri
+            // Save model uri to database
+            try {
+                saveUriToDB(storeName, exportResponse);
+            } catch (err) {
+                console.log(err);
+                res.status(500).json(err);
+                return;
+            }
 
-        // Sends the response of the training to the frontend
-        // TODO: Save model uri to database
-        res.status(200).json(exportResponse.metadata.outputInfo.artifactOutputUri);
+            // Sends the response of the training to the frontend
+            res.status(200).json(exportResponse.metadata.outputInfo.artifactOutputUri);
+            return;
+        } else {
+            res.status(500).json({ error: 'Model failed training' });
+            return;
+        }
     } catch (err) {
         console.log(err);
         res.status(500).json(err);
