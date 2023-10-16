@@ -5,18 +5,30 @@ import TestUL from './components/testUpload';
 import TestM from './components/testModel';
 import TestPay from './components/testPayment';
 
-import Shop from './shop';
-import Login from './login';
+import { Routes, Route } from 'react-router-dom';
+
+import Shop from './Shop';
+import Login from './Login';
+import Nav from './components/nav';
 
 function App() {
     return (
-        // Can get rid of test for actual development
-        <div>
-            <TestDS />
-            <TestUL />
-            <TestTM />
-            <TestM />
-        </div>
+        <>
+
+            <div className='w-screen h-screen'>
+                <div className='w-full h-5/6'>
+                    <Routes>
+                        <Route path="/" element={<Shop />} />
+                        <Route path="/shop" element={<Shop />} />
+                        <Route path="/login" element={<Login />} />
+                    </Routes>
+                </div>
+                <div className='w-screen h-1/6'>
+                    <Nav />
+                </div>
+            </div>
+
+        </>
     );
 }
 
