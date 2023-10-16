@@ -17,6 +17,26 @@ async function prepareDataset(datasetId, bucketName) {
 
     //console.log(name);
 
+    async function pollDatasetOperation(operationName) {
+        while (true) {
+            // Check the status of the operation.
+            const [operation] = await aiplatformClient.getOperation({ name: operationName });
+            if (operation.done) {
+                console.log('Dataset preparation completed.');
+                return;
+            } else {
+                if (operation.error) {
+                    console.error('Partial failures:', operation.error);
+                }
+
+                console.log('Dataset preparation status:', operation.done);
+            }
+
+            // Add a delay (e.g., 5 minutes) before the next status check.
+            await new Promise((resolve) => setTimeout(resolve, 30000)); // 30 sec in milliseconds.
+        }
+    }
+
     async function callImportData() {
         // Contruct importConfigs
         const importConfigs = [
@@ -35,7 +55,8 @@ async function prepareDataset(datasetId, bucketName) {
         // Run request
         const [operation] = await aiplatformClient.importData(request);
         //TODO: Add code to get progress % with operation.metadata
-        const [response] = await operation.promise();
+        await pollDatasetOperation(operation.name);
+        //const [response] = await operation.promise();
         console.log(response);
     }
 
@@ -84,6 +105,40 @@ async function exportModel(bucketName, modelId) {
     return response;
 }
 
+async function waitForTrainingCompletion(pipelineName) {
+    const project = process.env.PROJECT_ID;
+    const clientOptions = {
+        projectId: project,
+        keyFilename: process.env.SECRET_KEY,
+        apiEndpoint: 'us-central1-aiplatform.googleapis.com',
+    };
+    const aiplatform = require('@google-cloud/aiplatform');
+    const { PipelineServiceClient } = aiplatform.v1;
+    const pipelineServiceClient = new PipelineServiceClient(clientOptions);
+
+    const request = {
+        name: pipelineName, // The name of the training pipeline you want to monitor.
+    };
+
+    while (true) {
+        // Check the status of the training pipeline.
+        const [response] = await pipelineServiceClient.getTrainingPipeline(request);
+
+        console.log(`Training Pipeline Status: ${response.state}`);
+
+        if (response.state === 'PIPELINE_STATE_SUCCEEDED') {
+            console.log('Training pipeline completed successfully.');
+            return response.modelId;
+        } else if (response.state === 'PIPELINE_STATE_FAILED' || response.state === 'PIPELINE_STATE_CANCELLED') {
+            console.error('Training pipeline failed or was cancelled.');
+            break;
+        }
+
+        // Add a delay (e.g., 5 minutes) before the next status check.
+        await new Promise((resolve) => setTimeout(resolve, 30000)); // 30 sec in milliseconds.
+    }
+}
+
 // res in the form of {datasetId: 'dataset id (number)', bucketName: 'bucket name', modelName: 'model name', pipelineName, 'pipeline name'}
 router.post('/', async function (req, res) {
     const project = process.env.PROJECT_ID;
@@ -130,15 +185,15 @@ router.post('/', async function (req, res) {
 
         const trainingTaskDefinition = 'gs://google-cloud-aiplatform/schema/trainingjob/definition/automl_image_classification_1.0.0.yaml';
 
-        const modelToUpload = { displayName: 'wp' };
+        const modelToUpload = { displayName: 'foo' };
         const inputDataConfig = { datasetId };
         const trainingPipeline = {
-            displayName: 'wmo',
+            displayName: 'bar',
             trainingTaskDefinition,
             trainingTaskInputs,
             inputDataConfig,
             modelToUpload,
-            modelId: 'we',
+            modelId: 'foobar',
         };
         const request = { parent, trainingPipeline };
 
@@ -152,21 +207,22 @@ router.post('/', async function (req, res) {
         console.log('Raw response:');
         console.log(JSON.stringify(response, null, 2));
 
-        return response;
+        return response.name;
     }
 
     // Get dataset ready for training
     try {
         await prepareDataset(datasetId, bucketName);
 
+        // Create training pipeline
+        const pipelineName = await createTrainingPipelineImageClassification(); // COMMENT OUT UNLESS ACTUALLY TRAINING MODEL
+
         // Wait for model to be created
-        const modelResponse = await createTrainingPipelineImageClassification(); // COMMENT OUT UNLESS ACTUALLY TRAINING MODEL
+        const trainingResponse = await waitForTrainingCompletion(pipelineName);
 
         // Export model
-        const exportResponse = await exportModel(bucketName, modelResponse.modelId);
+        const exportResponse = await exportModel(bucketName, trainingResponse);
         //const exportResponse = await exportModel(bucketName, '6898483287224745984'); //DEBUG
-
-        //console.log(exportResponse);
 
         // Storage is in exportResponse.metadata.outputInfo.artifactOutputUri
 
