@@ -32,11 +32,10 @@ router.post('/', async function (req, res) {
 
     try {
         itemPrice = await getItemPrice(client, label);
+        res.json({ price: itemPrice });
     } catch (err) {
         res.status(500).json(err);
     }
-
-    res.json({ price: price });
 });
 
 module.exports = router;

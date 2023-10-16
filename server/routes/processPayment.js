@@ -103,6 +103,7 @@ router.post('/', async function (req, res) {
     } catch (err) {
         console.log('Error processing items');
         res.status(500).json(err);
+        return;
     }
 
     // Charge card
@@ -111,6 +112,7 @@ router.post('/', async function (req, res) {
     } catch (err) {
         console.log('Error processing payment');
         res.status(500).json(err);
+        return;
     }
 
     // Update inventory to reflect sale
@@ -120,6 +122,7 @@ router.post('/', async function (req, res) {
     } catch (err) {
         console.log('Error updating inventory');
         res.status(500).json(err);
+        return;
     }
 
     // Return result of payment and inventory

@@ -23,11 +23,12 @@ router.post('/', async function (req, res) {
                 }
 
                 res.status(200).json(storeInfo);
+                return;
             }
         }
     }
 
-    res.status(500).json({ error: 'Store not found' });
+    res.status(400).json({ error: 'Store not found' });
 });
 
 module.exports = router;

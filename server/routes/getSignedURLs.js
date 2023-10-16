@@ -137,7 +137,7 @@ router.post('/', async function (req, res) {
         }
     } catch (err) {
         console.log(err);
-        res.sendStatus(500);
+        res.status(500).json(err);
         return;
     }
 
