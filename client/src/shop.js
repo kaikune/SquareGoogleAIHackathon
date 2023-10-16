@@ -19,7 +19,7 @@ function Shop() {
     }
     */
 
-    const [prediction, setPrediction] = useState('');
+    const [modelData, setModelData] = useState({});
 
     function calculateTotalPrice() {
         let totalPrice = 0;
@@ -42,6 +42,7 @@ function Shop() {
                         price: price,
                     });
                     console.log(cart);
+
                 }}
             >
                 <img className="w-full h-1/2 object-contain" src={image} />
@@ -147,21 +148,20 @@ function Shop() {
                 <div className="flex flex-col w-full h-full">
                     <div className="flex flex-col justify-center items-center w-full h-full bg-silver-500">
                         <div className="w-3/4 h-full p-10">
-                            <TestM setPrediction={setPrediction} />
+                            <TestM setModelData={setModelData} />
                             <button
                                 onClick={async () =>
                                     addItem({
-                                        // TODO: make this not hardcoded
-                                        id: prediction,
+                                        id: modelData.label,
                                         quantity: 1,
-                                        name: prediction,
-                                        price: await getPrice(prediction),
-                                    })
+                                        name: modelData.label,
+                                        price: getPrice()
+                                    })   
                                 }
-                            >
-                                Add Item
-                            </button>
-                            <h1>{prediction}</h1>
+                                >
+                                    Add Item
+                                </button>
+                            <h1>{modelData.label}</h1>
                         </div>
                     </div>
                     <div className="w-full h-1/4"></div>
@@ -170,7 +170,7 @@ function Shop() {
                 <div className="w-2/5 h-full bg-white">
                     <div className="flex flex-row justify-start items-center w-full h-1/6 px-12 gap-5 object-fill">
                         <img src="/bad.jpg" className="w-20 h-20 rounded-full" />
-                        <h1 className="text-silver-500 font-bold text-3xl">JOHN SMITH</h1>
+                        <h1 className="text-silver-500 font-bold text-3xl">Ouckah</h1>
                     </div>
 
                     <div className="w-full h-1/2">
