@@ -4,6 +4,7 @@ const { Client, Environment } = require('square');
 
 // Gets the price of an item (in cents)
 async function getItemPrice(client, label) {
+    console.log(`Getting price of ${label}`);
     const { catalogApi } = client;
 
     // Search for each item in catalog and get id of ITEM_VARIATION
@@ -13,11 +14,13 @@ async function getItemPrice(client, label) {
 
     // Get catalog item matching label
     const searchResponse = await catalogApi.searchCatalogItems(filter);
-    if (response.errors) throw response.errors; // Throw if there are errors in request
 
-    let itemPrice = searchResponse.items[0].item_data.variations[0].item_variation_data.price_money.amout; // gets the price from response
+    console.log(searchResponse.result);
+    //if (!searchResponse.ok) throw response.errors; // Throw if there are errors in request
 
-    return itemPrice;
+    let itemPrice = Number(searchResponse.result.items[0].itemData.variations[0].itemVariationData.priceMoney.amount); // gets the price from response
+    console.log(itemPrice);
+    return itemPrice / 100;
 }
 
 // req in the form {label: 'label'}

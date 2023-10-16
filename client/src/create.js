@@ -26,12 +26,14 @@ function Create() {
             }),
         });
 
+        let user = undefined;
+
         if (!response.ok) {
             console.log('Error occurred when creating user');
+        } else {
+            user = await response.json(); // Do whatever with user stuff
+            console.log(user);
         }
-
-        const user = await response.json(); // Do whatever with user stuff
-        console.log(user);
     }
 
     async function createDataset(store) {

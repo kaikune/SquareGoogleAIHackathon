@@ -145,7 +145,6 @@ router.post('/', async function (req, res) {
     uploadCSV();
 
     // Send array of valid urls
-    //res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.status(200).send(urls);
 });
 
