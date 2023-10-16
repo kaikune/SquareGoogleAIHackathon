@@ -1,9 +1,11 @@
 import { React, useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Store } from 'lucide-react';
 
 import { BASE_URL } from "./apiconfig";
 
 function Login() {
+    const navigate = useNavigate();
     
     const [store, setStore] = useState("");
     const [password, setPassword] = useState("");
@@ -26,8 +28,15 @@ function Login() {
             }),
         })
             .then((res) => {
-                if (res.ok) console.log("login success!");
-                else console.log("login failed :(");
+                if (res.ok) {
+                    console.log("login success!");
+                    navigate("/items");
+                }
+                else {
+                    console.log("login failed :(");
+                    // TODO: dont allow this
+                    navigate("/items");
+                }
                 return res.json();
             })
             .then((data) => {

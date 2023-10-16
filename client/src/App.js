@@ -11,6 +11,7 @@ import Shop from './shop';
 import Home from './home';
 import Login from './login';
 import Create from './create';
+import Items from './items';
 import Nav from './components/nav';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/create" element={<Create />} />
+                        <Route path="/items" element={<Items />} />
                     </Routes>
                 </div>
                 <div className="w-screen h-1/6">
