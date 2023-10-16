@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-const project = process.env.PROJECT_ID;
-const location = process.env.LOCATION;
 
 // Imports images from dataset into ai
 async function prepareDataset(datasetId, bucketName) {
+    const project = process.env.PROJECT_ID;
+    const location = process.env.LOCATION;
     console.log('Importing dataset from storage...');
     const { DatasetServiceClient } = require('@google-cloud/aiplatform'); //.v1beta1
     const aiplatformClient = new DatasetServiceClient({
@@ -43,6 +43,8 @@ async function prepareDataset(datasetId, bucketName) {
 }
 
 async function exportModel(bucketName, modelId) {
+    const project = process.env.PROJECT_ID;
+    const location = process.env.LOCATION;
     console.log('Exporting model');
 
     // Imports the Google Cloud Model Service Client library
@@ -59,7 +61,7 @@ async function exportModel(bucketName, modelId) {
     const modelServiceClient = new ModelServiceClient(clientOptions);
 
     // Configure the name resources
-    const name = `projects/${project}/locations/${location}/models/${modelId}`;
+    const name = `projects/${project}/locations/${location}/models/abcd${modelId}`;
     // Configure the outputConfig resources
     const outputConfig = {
         exportFormatId: 'tf-js',
@@ -75,6 +77,7 @@ async function exportModel(bucketName, modelId) {
     // Export Model request
     const [response] = await modelServiceClient.exportModel(request);
     console.log(`Long running operation : ${response.name}`);
+    console.log(response);
 
     // Wait for operation to complete
     await response.promise();
@@ -83,6 +86,8 @@ async function exportModel(bucketName, modelId) {
 
 // res in the form of {datasetId: 'dataset id (number)', bucketName: 'bucket name', modelName: 'model name', pipelineName, 'pipeline name'}
 router.post('/', async function (req, res) {
+    const project = process.env.PROJECT_ID;
+    const location = process.env.LOCATION;
     const datasetId = req.body.datasetId;
     const bucketName = `${project}-${req.body.bucketName}`;
     const modelDisplayName = req.body.modelName;
@@ -125,15 +130,15 @@ router.post('/', async function (req, res) {
 
         const trainingTaskDefinition = 'gs://google-cloud-aiplatform/schema/trainingjob/definition/automl_image_classification_1.0.0.yaml';
 
-        const modelToUpload = { displayName: modelDisplayName };
+        const modelToUpload = { displayName: 'wp' };
         const inputDataConfig = { datasetId };
         const trainingPipeline = {
-            displayName: trainingPipelineDisplayName,
+            displayName: 'wmo',
             trainingTaskDefinition,
             trainingTaskInputs,
             inputDataConfig,
             modelToUpload,
-            modelId: modelDisplayName,
+            modelId: 'we',
         };
         const request = { parent, trainingPipeline };
 
@@ -169,6 +174,7 @@ router.post('/', async function (req, res) {
         // TODO: Save model uri to database
         res.status(200).json(exportResponse.metadata.outputInfo.artifactOutputUri);
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 });

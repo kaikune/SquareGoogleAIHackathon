@@ -3,8 +3,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
-var app = express();
-var setupRoutes = require('./routes/index');
+const app = express();
+const setupRoutes = require('./routes/index');
 require('dotenv').config();
 
 const corsOptions = {

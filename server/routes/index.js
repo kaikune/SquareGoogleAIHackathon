@@ -1,13 +1,13 @@
-var createDataset = require('./routes/createDataset');
-var getSignedUrls = require('./routes/getSignedURLs');
-var trainModel = require('./routes/trainModel');
-var processPayment = require('./routes/processPayment');
-var getPrice = require('./routes/getPrice');
-var getStoreInfo = require('./routes/getStoreInfo');
-var loginAuth = require('./routes/loginAuth');
-var createUser = require('./routes/createUser');
+var createDataset = require('./createDataset');
+var getSignedUrls = require('./getSignedURLs');
+var trainModel = require('./trainModel');
+var processPayment = require('./processPayment');
+var getPrice = require('./getPrice');
+var getStoreInfo = require('./getStoreInfo');
+var loginAuth = require('./loginAuth');
+var createUser = require('./createUser');
 
-const setupRoutes = (app) => {
+function setupRoutes(app) {
     app.use('/api/createDataset', createDataset);
     app.use('/api/getSignedUrls', getSignedUrls);
     app.use('/api/trainModel', trainModel);
@@ -20,6 +20,6 @@ const setupRoutes = (app) => {
     app.use('*', (req, res) => {
         res.status(404).json({ error: 'Not found' });
     });
-};
+}
 
-export default setupRoutes;
+module.exports = setupRoutes;

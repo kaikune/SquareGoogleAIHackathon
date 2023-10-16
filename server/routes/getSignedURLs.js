@@ -2,13 +2,13 @@ var express = require('express');
 var router = express.Router();
 const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
-const project = process.env.PROJECT_ID;
 const { Client, Environment } = require('square');
 const crypto = require('crypto');
 
 // TODO: Update to create the item in catalog at some point (take in price as well and inventory size)
 // req in the form of {bucketName: 'bucket name', label: 'product name', fileNames: ['filename.jpeg']}
 router.post('/', async function (req, res) {
+    const project = process.env.PROJECT_ID;
     const label = req.body.label;
     const bucketName = `${project}-${req.body.bucketName}`;
     const fileNames = req.body.fileNames;
@@ -35,24 +35,24 @@ router.post('/', async function (req, res) {
             itemData: {
                 name: label,
                 variations: [
-                  {
-                    type: 'ITEM_VARIATION',
-                    id: '#' + label + '_var',
-                    itemVariationData: {
-                        pricingType: 'FIXED_PRICING',
-                        priceMoney: {
-                            amount: price,
-                            currency: 'USD'
+                    {
+                        type: 'ITEM_VARIATION',
+                        id: '#' + label + '_var',
+                        itemVariationData: {
+                            pricingType: 'FIXED_PRICING',
+                            priceMoney: {
+                                amount: price,
+                                currency: 'USD',
+                            },
+                            sellable: true,
                         },
-                        sellable: true
-                    }
-                  }
-                ]
-              }
-            }
-          }
+                    },
+                ],
+            },
+        },
+    };
     const response = await client.catalogApi.upsertCatalogObject(catalogItem);
-    
+
     // Download csv from gcs to update it. Throws error if file not found
     async function downloadCSV() {
         const options = {

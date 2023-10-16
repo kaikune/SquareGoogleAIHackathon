@@ -2,15 +2,16 @@ var express = require('express');
 const { DatasetServiceClient } = require('@google-cloud/aiplatform').v1;
 var { Storage } = require('@google-cloud/storage');
 var router = express.Router();
-const project = process.env.PROJECT_ID;
-const location = process.env.LOCATION;
-const storage = new Storage({
-    projectId: project,
-    keyFilename: process.env.SECRET_KEY, // Overridden in production
-}); // Creates a client
 
 // Create image storage bucket
 async function createStorage(bucketName) {
+    const project = process.env.PROJECT_ID;
+    const location = process.env.LOCATION;
+    const storage = new Storage({
+        projectId: project,
+        keyFilename: process.env.SECRET_KEY, // Overridden in production
+    }); // Creates a client
+
     // Add project to front of name because buckets are globally identifyable and dont want to conflict with other buckets
     const fullName = `${project}-${bucketName}`;
     const metadata = {
@@ -45,6 +46,8 @@ async function createStorage(bucketName) {
 }
 
 async function createDataset(datasetName) {
+    const project = process.env.PROJECT_ID;
+    const location = process.env.LOCATION;
     // Instantiates a client
     const datasetServiceClient = new DatasetServiceClient({
         projectId: project,
@@ -86,6 +89,9 @@ async function createDataset(datasetName) {
 
 /* POST request handler for creating a dataset for Vertex AI */
 router.post('/', async function (req, res) {
+    const project = process.env.PROJECT_ID;
+    const location = process.env.LOCATION;
+
     // Extract bucketName and datasetName from the request body
     console.log('createDataset() recieved POST request');
     const { bucketName, datasetName } = req.body;

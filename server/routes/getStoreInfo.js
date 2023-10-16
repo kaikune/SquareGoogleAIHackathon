@@ -12,8 +12,13 @@ router.post('/', async function (req, res) {
     // Search for store
     for (const user of allUsers) {
         if (user.name === storeName) {
-            const model = await models.getModelById(user._id);
-            const storeInfo = { ...user, ...model.artifactOutputUri };
+            let storeInfo = undefined;
+            try {
+                const model = await models.getModelById(user._id);
+                storeInfo = { ...user, ...model.artifactOutputUri };
+            } catch (err) {
+                storeInfo = { ...user, artifactOutputUri: undefined };
+            }
 
             res.status(200).json(storeInfo);
         }
