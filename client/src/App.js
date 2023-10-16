@@ -8,7 +8,9 @@ import TestPay from './components/testPayment';
 import { Routes, Route } from 'react-router-dom';
 
 import Shop from './shop';
+import Home from './home';
 import Login from './login';
+import Create from './create';
 import Nav from './components/nav';
 
 function App() {
@@ -17,9 +19,10 @@ function App() {
             <div className="w-screen h-screen">
                 <div className="w-full h-5/6">
                     <Routes>
-                        <Route path="/" element={<Shop />} />
+                        <Route path="/" element={<Home />} />
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/login" element={<Login />} />
+                        <Route path="/create" element={<Create />} />
                     </Routes>
                 </div>
                 <div className="w-screen h-1/6">

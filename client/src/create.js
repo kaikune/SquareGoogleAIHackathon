@@ -3,7 +3,7 @@ import { Store } from 'lucide-react';
 
 import { BASE_URL } from "./apiconfig";
 
-function Login() {
+function Create() {
     
     const [store, setStore] = useState("");
     const [password, setPassword] = useState("");
@@ -11,18 +11,18 @@ function Login() {
     function handleSubmission(e) {
         e.preventDefault();
 
-        authStore(store, password);
+        createDataset(store);
     }
 
-    function authStore(user, pass) {
-        fetch(`${BASE_URL}/api/loginAuth`, {
+    function createDataset(store) {
+        fetch(`${BASE_URL}/api/createDataset`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                store: user,
-                password: pass,
+                bucketName: `${store}-bucket`,
+                datasetName: `${store}-dataset`,
             }),
         })
             .then((res) => {
@@ -32,6 +32,7 @@ function Login() {
             })
             .then((data) => {
                 console.log(data);
+                console.log(data[1])
             })
             .catch((error) => {
                 console.error(error);
@@ -69,7 +70,7 @@ function Login() {
                                 className="bg-silver-500 w-1/2 px-8 py-4 rounded-full transition-all duration-300 hover:brightness-75"
                                 onClick={handleSubmission}
                             >
-                                <h1 className="text-white font-bold text-2xl uppercase">Log In</h1>
+                                <h1 className="text-white font-bold text-2xl uppercase">Create Store</h1>
                             </button>
                         </form>
                     </div>
@@ -80,4 +81,4 @@ function Login() {
     )
 }
 
-export default Login;
+export default Create;
