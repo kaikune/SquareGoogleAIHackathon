@@ -1,9 +1,14 @@
 import { React, useEffect, useState } from 'react';
-import { Store } from 'lucide-react';
+import { Store, ArrowLeft } from 'lucide-react';
 
 import { BASE_URL } from './apiconfig';
+import { Link, useNavigate } from 'react-router-dom';
+
+import StoreProfile from './storeprofile';
 
 function Create() {
+    const navigate = useNavigate();
+
     const [store, setStore] = useState('');
     const [password, setPassword] = useState('');
 
@@ -54,16 +59,22 @@ function Create() {
             const data = await response.json();
             //console.log(data);
             const datasetID = data[1].name.split('/').pop(); // Gets the datasetID
+            StoreProfile.setDatasetId(datasetID); // sets datasetID locally
 
             await createUser(store, password, datasetID); // Creates dataset and returns its data
+
+            navigate("/items"); // navigate to creating items
+
         }
     }
 
     return (
         <>
             <div className="flex flex-col justify-center items-center bg-gray-200 w-full h-full">
-                <div className="flex flex-col justify-evenly items-center w-3/4 md:w-1/2 h-3/4 bg-white rounded-2xl drop-shadow-xl">
-                    <div className="padding" />
+                <div className="flex flex-col justify-evenly items-center w-3/4 md:w-1/2 h-3/4 bg-white rounded-2xl drop-shadow-xl p-5">
+                    <Link className="flex flex-col justify-center items-center w-full" to="/">
+                        <ArrowLeft className="self-start" size={50}/>
+                    </Link>
                     <div className="flex flex-col justify-center items-center">
                         <Store color="black" size={100} />
                         <h1 className="text-black font-bold text-4xl uppercase tracking-wider select-none">Snap Cart</h1>
