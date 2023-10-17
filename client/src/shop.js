@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import TestM from './components/testModel';
 import Payment from './components/testPayment';
 import { X } from 'lucide-react';
@@ -30,34 +30,12 @@ function Shop() {
         return totalPrice.toFixed(2); // Return the total price with two decimal places
     }
 
-    const ItemCard = ({ id, name, price, image }) => {
-        return (
-            <button
-                className="flex flex-col justify-center items-center w-48 h-60 bg-white gap-2 rounded-xl drop-shadow-md"
-                onClick={() => {
-                    addItem({
-                        id: id,
-                        quantity: 1,
-                        name: name,
-                        price: price,
-                    });
-                    console.log(cart);
-
-                }}
-            >
-                <img className="w-full h-1/2 object-contain" src={image} />
-                <h1>{name}</h1>
-                <h1>${price}</h1>
-            </button>
-        );
-    };
-
-    const ItemSlot = ({ id, quantity, name, price }) => {
+    const ItemSlot = ({ id, quantity, price }) => {
         return (
             <div className="flex flex-row justify-between items-center w-full h-24 bg-gray-100 px-10" key={id}>
                 <div className="flex flex-row justify-start items-center gap-10">
                     <h1 className="font-semibold text-3xl">{quantity}</h1>
-                    <h1 className="font-bold text-xl opacity-60">{name}</h1>
+                    <h1 className="font-bold text-xl opacity-60">{id}</h1>
                 </div>
                 <div className="flex flex-row justify-start items-center gap-10">
                     <h1 className="font-bold text-2xl">${(price * quantity).toFixed(2)}</h1>
@@ -142,6 +120,17 @@ function Shop() {
         setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
     }
 
+    useEffect(() => {
+        if (modelData.successfulChecks > 10) {
+            console.log("item scanned");
+            addItem({
+                id: modelData.label,
+                quantity: 1,
+                price: getPrice(modelData.label)
+            })
+        }
+    }, [modelData])
+
     return (
         <>
             <div className="flex flex-row w-full h-full bg-white">
@@ -154,8 +143,7 @@ function Shop() {
                                     addItem({
                                         id: modelData.label,
                                         quantity: 1,
-                                        name: modelData.label,
-                                        price: getPrice()
+                                        price: getPrice(modelData.label)
                                     })   
                                 }
                                 >
