@@ -56,10 +56,9 @@ async function prepareDataset(datasetId, bucketName) {
 
         // Run request
         const [operation] = await aiplatformClient.importData(request);
-        //TODO: Add code to get progress % with operation.metadata
+
+        // Wait for request to finish
         await pollDatasetOperation(operation.name);
-        //const [response] = await operation.promise();
-        console.log(response);
     }
 
     await callImportData();
@@ -228,17 +227,17 @@ router.post('/', async function (req, res) {
 
     // Get dataset ready for training
     try {
-        //await prepareDataset(datasetId, bucketName);
+        await prepareDataset(datasetId, bucketName);
 
         // Create training pipeline
         const pipelineName = await createTrainingPipelineImageClassification(); // COMMENT OUT UNLESS ACTUALLY TRAINING MODEL
 
         // Wait for model to be created
-        const trainingResponse = await waitForTrainingCompletion(pipelineName);
+        const modelId = await waitForTrainingCompletion(pipelineName);
 
         // Export model
         if (trainingResponse) {
-            const exportResponse = await exportModel(bucketName, trainingResponse);
+            const exportResponse = await exportModel(bucketName, modelId);
             //const exportResponse = await exportModel(bucketName, '6898483287224745984'); //DEBUG
 
             // Save model uri to database
