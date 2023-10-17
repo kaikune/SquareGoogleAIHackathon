@@ -6,6 +6,7 @@ var getPrice = require('./getPrice');
 var getStoreInfo = require('./getStoreInfo');
 var loginAuth = require('./loginAuth');
 var createUser = require('./createUser');
+var inventory = require('./inventory');
 
 function setupRoutes(app) {
     app.use('/api/createDataset', createDataset);
@@ -16,6 +17,7 @@ function setupRoutes(app) {
     app.use('/api/getStoreInfo', getStoreInfo);
     app.use('/api/loginAuth', loginAuth);
     app.use('/api/createUser', createUser);
+    app.use('/api/inventory', inventory);
 
     app.use('*', (req, res) => {
         res.status(404).json({ error: 'Not found' });

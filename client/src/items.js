@@ -8,6 +8,7 @@ function Items() {
     const [message, setMessage] = useState('');
     const [label, setLabel] = useState('');
     const [price, setPrice] = useState(0);
+    const [stock, setStock] = useState(0);
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
@@ -21,6 +22,10 @@ function Items() {
 
     const handlePriceChange = (e) => {
         setPrice(e.target.value);
+    };
+
+    const handleStockChange = (e) => {
+        setStock(e.target.value);
     };
 
     async function getUrls(fileNames) {
@@ -61,6 +66,11 @@ function Items() {
             return;
         }
 
+        if (Math.floor(stock) === stock || stock < 0) {
+            setMessage('Please enter a valid stock');
+            return;
+        }
+
         setMessage('Preparing to upload files');
 
         const fileNames = files.map((file) => file.name); // Extract file names
@@ -85,7 +95,29 @@ function Items() {
             setMessage('Files done uploading!');
         } catch (error) {
             setMessage(`File upload failed: ${error.message}`);
+            return;
         }
+
+        setMessage('Updating Inventory');
+
+        const response = await fetch(`${BASE_URL}/api/inventory`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                fromState: 'NONE',
+                toState: 'IN_STOCK',
+                items: { id: label, quantity: stock },
+            }),
+        });
+
+        if (!response.ok) {
+            setMessage('Error updating inventory');
+            return;
+        }
+
+        setMessage('Good to go!');
     };
 
     return (
@@ -102,8 +134,15 @@ function Items() {
                     </h1>
                 )}
             </div>
-            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="text" value={label} placeholder="Pasta Sauce" onChange={handleLabelChange} />
-            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="number" value={price} placeholder="1.99" onChange={handlePriceChange} />
+            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="text" value={label} placeholder="Product Name" onChange={handleLabelChange} />
+            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="number" value={price} placeholder="Price" onChange={handlePriceChange} />
+            <input
+                className="bg-gray-200 w-1/3 p-5 rounded-full"
+                type="number"
+                value={stock}
+                placeholder="Initial Stock"
+                onChange={handleStockChange}
+            />
             <button className="bg-silver-500 w-1/3 px-8 py-4 rounded-full transition-all duration-300 hover:brightness-75" onClick={handleUpload}>
                 <h1 className="text-white font-bold text-2xl uppercase">Upload</h1>
             </button>
