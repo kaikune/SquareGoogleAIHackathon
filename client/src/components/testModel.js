@@ -84,7 +84,6 @@ function TestModel({ setModelData, charging }) {
         const predict = async () => {
             const img = await webcam.capture();
             const result = await model.classify(img);
-            const reqProb = 0.4;
 
             if (resultdict === undefined) {
                 resultdict = { ...result };
@@ -96,31 +95,7 @@ function TestModel({ setModelData, charging }) {
 
             const pred = Object.keys(resultdict).reduce((a, b) => (resultdict[a].prob > resultdict[b].prob ? a : b));
 
-            {
-                //console.log(result[pred])
-                if (resultdict[pred].label === currentLabel && resultdict[pred].label !== 'Not Valid') {
-                    if (resultdict[pred].prob >= reqProb) {
-                        if (resultdict[pred].successfulChecks !== undefined) {
-                            resultdict[pred].successfulChecks++;
-                            //console.log('Check Passed');
-                        } else {
-                            resultdict[pred].successfulChecks = 0;
-                            //console.log('Undefined Found');
-                        }
-                    } else {
-                        if (resultdict[pred].successfulChecks === undefined) {
-                            resultdict[pred].successfulChecks = 0;
-                        }
-                        //console.log('Check Failed');
-                    }
-                } else {
-                    currentLabel = resultdict[pred].label;
-                    resultdict[pred].successfulChecks = 0;
-                    //console.log('Check Reset');
-                }
-            }
-
-            setMessage(`prediction: ${resultdict[pred].label}, probability: ${resultdict[pred].prob}, checks: ${resultdict[pred].successfulChecks}`);
+            setMessage(`prediction: ${resultdict[pred].label}, probability: ${resultdict[pred].prob}`);
 
             // Set the prediction state
             setModelData(resultdict[pred]);
@@ -129,7 +104,6 @@ function TestModel({ setModelData, charging }) {
         };
 
         // Continuously make predictions and update state
-        let currentLabel = '';
         let resultdict = undefined;
 
         const predictLoop = async () => {
