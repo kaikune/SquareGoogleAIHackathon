@@ -3,6 +3,7 @@ import TestM from './components/testModel';
 import Payment from './components/testPayment';
 import { X } from 'lucide-react';
 import { BASE_URL } from './apiconfig';
+import StoreProfile from './storeprofile';
 
 function Shop() {
     const [cart, setCart] = useState([]);
@@ -151,7 +152,7 @@ function Shop() {
                 <div className="flex flex-col w-full h-full">
                     <div className="flex flex-col justify-center items-center w-full h-full bg-silver-500">
                         <div className="w-3/4 h-full p-10">
-                            <TestM setModelData={setModelData} />
+                            <TestM setModelData={setModelData} charging={charging} />
                             <button
                                 onClick={async () =>
                                     addItem({
@@ -173,7 +174,7 @@ function Shop() {
                 <div className="w-2/5 h-full bg-white">
                     <div className="flex flex-row justify-start items-center w-full h-1/6 px-12 gap-5 object-fill">
                         <img src="/bad.jpg" className="w-20 h-20 rounded-full" />
-                        <h1 className="text-silver-500 font-bold text-3xl">Ouckah</h1>
+                        <h1 className="text-silver-500 font-bold text-3xl">{StoreProfile.getStoreName()}</h1>
                     </div>
 
                     <div className="w-full h-1/2">
@@ -187,7 +188,7 @@ function Shop() {
                                     <X className="cursor-pointer" color="white" onClick={() => setCharging(false)} />
                                     <h1 className="text-white font-bold">${calculateTotalPrice()}</h1>
                                 </div>
-                                <Payment price={calculateTotalPrice()} items={cart} />
+                                <Payment price={calculateTotalPrice()} items={cart} setCart={setCart} />
                             </>
                         ) : (
                             <>

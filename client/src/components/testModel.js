@@ -4,9 +4,10 @@ import * as tf from '@tensorflow/tfjs';
 import { BASE_URL } from '../apiconfig';
 import StoreProfile from '../storeprofile';
 
-function TestModel({ setModelData }) {
+function TestModel({ setModelData, charging }) {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+
     const ms = 100; //Delay between model scans in ms
     let model = undefined;
 
@@ -101,21 +102,21 @@ function TestModel({ setModelData }) {
                     if (resultdict[pred].prob >= reqProb) {
                         if (resultdict[pred].successfulChecks !== undefined) {
                             resultdict[pred].successfulChecks++;
-                            console.log('Check Passed');
+                            //console.log('Check Passed');
                         } else {
                             resultdict[pred].successfulChecks = 0;
-                            console.log('Undefined Found');
+                            //console.log('Undefined Found');
                         }
                     } else {
                         if (resultdict[pred].successfulChecks === undefined) {
                             resultdict[pred].successfulChecks = 0;
                         }
-                        console.log('Check Failed');
+                        //console.log('Check Failed');
                     }
                 } else {
                     currentLabel = resultdict[pred].label;
                     resultdict[pred].successfulChecks = 0;
-                    console.log('Check Reset');
+                    //console.log('Check Reset');
                 }
             }
 
@@ -130,6 +131,7 @@ function TestModel({ setModelData }) {
         // Continuously make predictions and update state
         let currentLabel = '';
         let resultdict = undefined;
+
         const predictLoop = async () => {
             while (true) {
                 await predict();

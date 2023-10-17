@@ -2,7 +2,7 @@ import { CreditCard, PaymentForm } from 'react-square-web-payments-sdk';
 import { React, useState } from 'react';
 import { BASE_URL } from '../apiconfig';
 
-export default function Payment({ price, items }) {
+export default function Payment({ price, items, setCart }) {
     const [message, setMessage] = useState('');
 
     return (
@@ -26,8 +26,10 @@ export default function Payment({ price, items }) {
                     });
                     const payRes = await response.json();
                     console.log(payRes);
-                    if (typeof payRes === 'string') setMessage(payRes);
-                    else {
+                    if (typeof payRes === 'string') {
+                        setMessage(payRes);
+                        setCart([]);
+                    } else {
                         setMessage('An error has occurred');
                     }
                 }}
