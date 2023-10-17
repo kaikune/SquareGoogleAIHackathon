@@ -15,8 +15,11 @@ router.post('/', async function (req, res) {
             let storeInfo = undefined;
             try {
                 const model = await models.getModelById(user._id);
-                storeInfo = { ...user, ...model.artifactOutputUri };
+                storeInfo = { ...user };
+                storeInfo.artifactOutputUri = model.artifactOutputUri;
             } catch (err) {
+                console.log('Error getting model');
+                console.log(err);
                 storeInfo = { ...user, artifactOutputUri: undefined };
             }
 

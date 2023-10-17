@@ -1,17 +1,17 @@
 const { models } = require('./dbCollection.js');
 const { ObjectId } = require('mongodb');
 
-const getModelById = async (id) => {
-    if (!id) throw 'You must provide an id to search for';
-    if (typeof id !== 'string') throw 'Id must be a string';
-    if (id.trim().length === 0) throw 'Id cannot be an empty string or just spaces';
-    id = id.trim();
-    if (!ObjectId.isValid(id)) throw 'invalid object ID';
+const getModelById = async (modelID) => {
+    if (!modelID) throw 'You must provide an id to search for';
+    if (typeof modelID !== 'string') throw 'Id must be a string';
+    if (modelID.trim().length === 0) throw 'Id cannot be an empty string or just spaces';
+    modelID = modelID.trim();
     const modelCollection = await models();
-    const model = await modelCollection.findOne({ _id: new ObjectId(id) });
+    const model = await modelCollection.findOne({ modelID: modelID });
     if (model === null) throw 'No model with that id';
     model._id = model._id.toString();
 
+    console.log(`Successfully found model with ID ${modelID}`);
     return model;
 };
 const addModel = async (modelID, artifactOutputUri) => {

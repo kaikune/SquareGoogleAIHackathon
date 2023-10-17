@@ -6,6 +6,27 @@ function TrainModel() {
     const [modelURL, setModelURL] = useState('');
 
     const handleTraining = async () => {
+        // Gets store info
+        const response = await fetch(`${BASE_URL}/api/getStoreInfo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                store: 'snapstore', // replace with actual store name
+            }),
+        });
+
+        if (!response.ok) {
+            console.log('Failed to fetch store data');
+            return;
+        }
+
+        const data = await response.json();
+        // TODO: Save data.artifactOutputUri somewhere
+        console.log(data);
+
+        // Trains model
         fetch(`${BASE_URL}/api/trainModel`, {
             method: 'POST',
             headers: {
@@ -13,8 +34,8 @@ function TrainModel() {
             },
             body: JSON.stringify({
                 // TODO: Replace values with actual stuff
-                datasetId: '464865819642298368', // Needs to be the id of the dataset used. Given when database is created in 'name' field (testDataset)
-                bucketName: 'snapstore', // Change to store name (store name from testDataset)
+                datasetId: data.datasetID, // Needs to be the id of the dataset used. Given when database is created in 'name' field (testDataset)
+                bucketName: data.name, // Change to store name (store name from testDataset)
                 modelName: 'model', // Change model name (I dont think this really matters)
                 pipelineName: 'modelpipeline', // change pipeline name
             }),
