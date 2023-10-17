@@ -14,22 +14,42 @@ import Create from './create';
 import Items from './items';
 import Nav from './components/nav';
 
+import StoreProfile from './storeprofile';
+
 function App() {
     return (
         <>
             <div className="w-screen h-screen">
-                <div className="w-full h-5/6">
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/shop" element={<Shop />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/create" element={<Create />} />
-                        <Route path="/items" element={<Items />} />
-                    </Routes>
-                </div>
-                <div className="w-screen h-1/6">
-                    <Nav />
-                </div>
+                {
+                    StoreProfile.getDatasetId() == "" || StoreProfile.getDatasetId() == null ? (
+                        <>
+                        
+                            <div className="w-full h-full">
+                                <Routes>
+                                    <Route path="/" element={<Home />} />
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/create" element={<Create />} />
+                                </Routes>
+                            </div>
+                        
+                        </>
+                    ) : (
+                        <>
+                            <div className="w-full h-5/6">
+                                <Routes>
+                                    <Route path="/" element={<Home />} />
+                                    <Route path="/shop" element={<Shop />} />
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/create" element={<Create />} />
+                                    <Route path="/items" element={<Items />} />
+                                </Routes>
+                            </div>
+                            <div className="w-screen h-1/6">
+                                <Nav />
+                            </div>
+                        </>
+                    )
+                }
             </div>
         </>
     );

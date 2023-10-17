@@ -4,6 +4,8 @@ import { Store, ArrowLeft } from 'lucide-react';
 
 import { BASE_URL } from "./apiconfig";
 
+import StoreProfile from "./storeprofile";
+
 function Login() {
     const navigate = useNavigate();
     
@@ -37,6 +39,9 @@ function Login() {
             })
             .then((data) => {
                 console.log(data);
+
+                const datasetId = data['datasetID'];
+                StoreProfile.setDatasetId(datasetId); // store datasetId in localStorage
             })
             .catch((error) => {
                 console.error(error);

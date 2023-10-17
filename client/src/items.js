@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BASE_URL } from './apiconfig.js';
 import { Upload } from 'lucide-react';
+import StoreProfile from './storeprofile.js';
 
 function Items() {
     const [files, setFiles] = useState([]);
@@ -13,6 +14,8 @@ function Items() {
         setFiles(selectedFiles);
         console.log(files);
     };
+
+    console.log(StoreProfile.getDatasetId());
 
     const handleLabelChange = (e) => {
         setLabel(e.target.value);

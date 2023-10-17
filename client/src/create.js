@@ -2,9 +2,13 @@ import { React, useEffect, useState } from 'react';
 import { Store, ArrowLeft } from 'lucide-react';
 
 import { BASE_URL } from './apiconfig';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import StoreProfile from './storeprofile';
 
 function Create() {
+    const navigate = useNavigate();
+
     const [store, setStore] = useState('');
     const [password, setPassword] = useState('');
 
@@ -55,8 +59,12 @@ function Create() {
             const data = await response.json();
             //console.log(data);
             const datasetID = data[1].name.split('/').pop(); // Gets the datasetID
+            StoreProfile.setDatasetId(datasetID); // sets datasetID locally
 
             await createUser(store, password, datasetID); // Creates dataset and returns its data
+
+            navigate("/items"); // navigate to creating items
+
         }
     }
 
