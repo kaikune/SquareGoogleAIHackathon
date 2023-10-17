@@ -1,13 +1,21 @@
-import { React, useEffect, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import TestM from './components/testModel';
 import Payment from './components/testPayment';
 import { X } from 'lucide-react';
 import { BASE_URL } from './apiconfig';
+import { mod } from '@tensorflow/tfjs';
+import * as automl from '@tensorflow/tfjs-automl';
+import * as tf from '@tensorflow/tfjs';
 
 function Shop() {
     const [cart, setCart] = useState([]);
     const [charging, setCharging] = useState(false);
     const [priceCache, setPriceCache] = useState({});
+
+    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+    const ms = 100; //Delay between model scans in ms
+    let model = undefined;
 
     // ITEM FORMAT:
     /*
@@ -21,6 +29,103 @@ function Shop() {
 
     const [modelData, setModelData] = useState({});
 
+    const queryModel = async () => {
+        // TODO: ModelURL should be passed into component instead of harcoded. Will be recieved by testTraining.js (from trainModel.js in server )
+        const modelURL =
+            'https://storage.googleapis.com/hackathon-401318-teststore/models/model-6898483287224745984/tf-js/2023-10-09T21:07:07.022206Z';
+        // Initialize model if not already
+        setLoading(true);
+        console.log('Loading model..');
+
+        if (!model) {
+            try {
+                // Load the model
+                model = await Promise.resolve(automl.loadImageClassification(`${modelURL}/model.json`));
+                console.log(model);
+            } catch (error) {
+                console.error('Error loading model:', error);
+            }
+        }
+        console.log('Successfully loaded model');
+
+        // Create an object from Tensorflow.js data API which could capture image
+        // from the web camera as Tensor.
+        const webcamElement = document.getElementById('webcam');
+        const webcam = await tf.data.webcam(webcamElement);
+
+        // Create a function for making predictions
+        let canAdd = false;
+        const predict = async () => {
+            const img = await webcam.capture();
+            const result = await model.classify(img);
+            const reqProb = .4;
+            
+
+            if(resultdict === undefined){
+                resultdict = {...result}
+            }
+            Object.keys(result).forEach((key) => {
+                resultdict[key].label = result[key].label
+                resultdict[key].prob = result[key].prob
+            })
+
+            const pred = Object.keys(resultdict).reduce((a, b) => (resultdict[a].prob > resultdict[b].prob ? a : b));
+
+            {
+                //console.log(result[pred])
+                if(resultdict[pred].label === currentLabel && resultdict[pred].label !== "Not Valid"){
+                    if(resultdict[pred].prob >= reqProb){
+                        if(resultdict[pred].successfulChecks !== undefined){
+                            resultdict[pred].successfulChecks++;
+                            //console.log("Check Passed")
+                        }
+                        else{
+                            resultdict[pred].successfulChecks = 0;
+                            console.log("Undefined Found")
+                        }
+                    }
+                    else{
+                        if(resultdict[pred].successfulChecks === undefined){
+                            resultdict[pred].successfulChecks = 0;
+                        }
+                        //console.log("Check Failed")
+                    }
+                }
+                else{
+                    canAdd = true;
+                    currentLabel = resultdict[pred].label
+                    resultdict[pred].successfulChecks = 0;
+                    //console.log("Check Reset")
+                }
+            }
+
+            setMessage(`prediction: ${resultdict[pred].label}, probability: ${resultdict[pred].prob}, checks: ${resultdict[pred].successfulChecks}`);
+
+            // Set the prediction state
+            if(resultdict[pred].successfulChecks >= 3 && canAdd) {
+                canAdd = false;
+                addItem_helper(resultdict[pred])
+            }
+            setModelData(resultdict[pred]);
+
+            img.dispose();
+        };
+
+        // Continuously make predictions and update state
+        let currentLabel = ""
+        let resultdict = undefined;
+        const predictLoop = async () => {
+            while (true) {
+                await predict();
+                await new Promise(r => setTimeout(r, ms));
+                await tf.nextFrame();
+            }
+        };
+
+        // Start the prediction loop
+        predictLoop();
+    };
+
     function calculateTotalPrice() {
         let totalPrice = 0;
         for (const item of cart) {
@@ -30,12 +135,12 @@ function Shop() {
         return totalPrice.toFixed(2); // Return the total price with two decimal places
     }
 
-    const ItemSlot = ({ id, quantity, price }) => {
+    const ItemSlot = ({ id, quantity, name, price }) => {
         return (
             <div className="flex flex-row justify-between items-center w-full h-24 bg-gray-100 px-10" key={id}>
                 <div className="flex flex-row justify-start items-center gap-10">
                     <h1 className="font-semibold text-3xl">{quantity}</h1>
-                    <h1 className="font-bold text-xl opacity-60">{id}</h1>
+                    <h1 className="font-bold text-xl opacity-60">{name}</h1>
                 </div>
                 <div className="flex flex-row justify-start items-center gap-10">
                     <h1 className="font-bold text-2xl">${(price * quantity).toFixed(2)}</h1>
@@ -57,23 +162,9 @@ function Shop() {
         );
     };
 
-    function checkItemInCart(itemId) {
-        for (const item of cart) {
-            if (item.id === itemId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function findItemInCart(itemId) {
-        for (const i in cart) {
-            const item = cart[i];
-            if (item.id === itemId) {
-                return i;
-            }
-        }
-        return -1;
+    function getCart(){ //returns a copy of cart
+        console.log("cart: ", cart);
+        return [...cart];
     }
 
     async function getPrice(itemName) {
@@ -104,10 +195,26 @@ function Shop() {
         }
     }
 
-    const addItem = (item) => {
+    const addItem_helper = async (item) => {
+        //console.log("in addItem_helper: ", item)
+        addItem({
+            id: item.label,
+            quantity: 1,
+            name: item.label,
+            price: await getPrice(item.label)
+        })
+        console.log(cart)
+        //compressCart();
+    }
+    const addItem = (item) => { //Should be setup that all we need to do is call startLoop() as an async function
+        //console.log("in addItem: ", item)
         if (checkItemInCart(item.id)) {
-            const newCart = [...cart];
+            const newCart = getCart();
             const index = findItemInCart(item.id);
+
+            if(item["price"] === undefined){
+                item["price"] = getPrice(item.id)
+            }
 
             newCart[index].quantity += 1;
             setCart(newCart);
@@ -118,6 +225,19 @@ function Shop() {
 
     function removeItem(itemId) {
         setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
+    }
+
+    function removeItemByIndex(index, passedCart){
+        let tempCart = [];
+        for(let i = 0; i < passedCart.length; i++){
+            if (i !== index){
+                tempCart.push(passedCart[i])
+            }
+            else{
+                console.log("removed: ", passedCart[i], " at index ", index)
+            }
+        }
+        return tempCart
     }
 
     useEffect(() => {
@@ -131,20 +251,60 @@ function Shop() {
         }
     }, [modelData])
 
+
+    function compressCart(){
+        let newCart = [...cart];
+        console.log("uncompressed Cart: ", newCart);
+        for(let i = 0; i < newCart.length; i++){
+            for(let j = i + 1; j < newCart.length; j++){
+                if(newCart[i].id === newCart[j].id){
+                    newCart[i].quantity += newCart[j].quantity
+                    newCart = removeItemByIndex(j, newCart)
+                }
+            }
+        }
+        console.log("Compressed Cart: ", newCart);
+        //setCart(newCart)
+    }
+
+    function checkItemInCart(itemId) {
+        //console.log(cart);
+        for (const item of getCart()) {
+            //console.log(`${item.id}, ${itemId}`)
+            if (item.id === itemId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function findItemInCart(itemId) {
+        for (const i in cart) {
+            const item = cart[i];
+            if (item.id === itemId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     return (
         <>
             <div className="flex flex-row w-full h-full bg-white">
                 <div className="flex flex-col w-full h-full">
                     <div className="flex flex-col justify-center items-center w-full h-full bg-silver-500">
                         <div className="w-3/4 h-full p-10">
-                            <TestM setModelData={setModelData} />
+                            <div>
+                                <video autoPlay playsInline muted id="webcam" className="w-full h-2/3 object-cover"></video>
+                                {loading ? <></> : <button onClick={queryModel}>Test Model</button>}
+                                {message && <div>{message}</div>}
+                            </div>
                             <button
-                                onClick={async () =>
-                                    addItem({
-                                        id: modelData.label,
-                                        quantity: 1,
-                                        price: getPrice(modelData.label)
-                                    })   
+                                onClick={async () => {
+                                    //if (modelData.successfulChecks >= 3) {
+                                    addItem_helper(modelData)   
+                                    //}
+                                }
                                 }
                                 >
                                     Add Item
@@ -172,7 +332,7 @@ function Shop() {
                                     <X className="cursor-pointer" color="white" onClick={() => setCharging(false)} />
                                     <h1 className="text-white font-bold">${calculateTotalPrice()}</h1>
                                 </div>
-                                <Payment price={calculateTotalPrice()} />
+                                <Payment price={calculateTotalPrice()} items={cart} />
                             </>
                         ) : (
                             <>
@@ -197,5 +357,7 @@ function Shop() {
         </>
     );
 }
+
+
 
 export default Shop;
