@@ -15,8 +15,6 @@ function Items() {
         console.log(files);
     };
 
-    console.log(StoreProfile.getDatasetId());
-
     const handleLabelChange = (e) => {
         setLabel(e.target.value);
     };
@@ -34,7 +32,7 @@ function Items() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    bucketName: 'teststore', // Change to store name
+                    bucketName: StoreProfile.getStoreName(), // Change to store name
                     label: label, // Label for all the images
                     fileNames: fileNames, // Send an array of file names
                     price: price * 100,
@@ -83,41 +81,18 @@ function Items() {
     };
 
     return (
-        <div className='flex flex-col justify-center items-center w-full h-full gap-3 relative'>
-            <input
-                className='w-2/3 h-1/2 opacity-0 cursor-pointer'
-                type="file"
-                multiple
-                accept=".jpg"
-                onChange={handleFileChange}
-            />
-            <div className='flex flex-col justify-center items-center w-2/3 h-1/2 bg-silver-300 border-dotted border-silver-500 border-8 rounded-full absolute top-20 pointer-events-none'>
-                <Upload size={100}/>
-                <h1 className='text-2xl font-bold'>Upload Files</h1>
-                {
-                    files.map((file) => (
-                        <h1>{file.name}</h1>
-                    ))
-                }
+        <div className="flex flex-col justify-center items-center w-full h-full gap-3 relative">
+            <input className="w-2/3 h-1/2 opacity-0 cursor-pointer" type="file" multiple accept=".jpg" onChange={handleFileChange} />
+            <div className="flex flex-col justify-center items-center w-2/3 h-1/2 bg-silver-300 border-dotted border-silver-500 border-8 rounded-full absolute top-20 pointer-events-none">
+                <Upload size={100} />
+                <h1 className="text-2xl font-bold">Upload Files</h1>
+                {files.map((file) => (
+                    <h1>{file.name}</h1>
+                ))}
             </div>
-            <input 
-                className="bg-gray-200 w-1/3 p-5 rounded-full"
-                type="text" 
-                value={label} 
-                placeholder='Pasta Sauce'
-                onChange={handleLabelChange} 
-            />
-            <input
-                className="bg-gray-200 w-1/3 p-5 rounded-full"
-                type="number" 
-                value={price}
-                placeholder='1.99'
-                onChange={handlePriceChange} 
-            />
-            <button 
-                className="bg-silver-500 w-1/3 px-8 py-4 rounded-full transition-all duration-300 hover:brightness-75"
-                onClick={handleUpload}
-            >
+            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="text" value={label} placeholder="Pasta Sauce" onChange={handleLabelChange} />
+            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="number" value={price} placeholder="1.99" onChange={handlePriceChange} />
+            <button className="bg-silver-500 w-1/3 px-8 py-4 rounded-full transition-all duration-300 hover:brightness-75" onClick={handleUpload}>
                 <h1 className="text-white font-bold text-2xl uppercase">Upload</h1>
             </button>
 
