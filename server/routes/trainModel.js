@@ -228,7 +228,7 @@ router.post('/', async function (req, res) {
 
     // Get dataset ready for training
     try {
-        //await prepareDataset(datasetId, bucketName);
+        await prepareDataset(datasetId, bucketName);
 
         // Create training pipeline
         const pipelineName = await createTrainingPipelineImageClassification(); // COMMENT OUT UNLESS ACTUALLY TRAINING MODEL
