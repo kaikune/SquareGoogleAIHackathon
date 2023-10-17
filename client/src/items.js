@@ -7,8 +7,8 @@ function Items() {
     const [files, setFiles] = useState([]);
     const [message, setMessage] = useState('');
     const [label, setLabel] = useState('');
-    const [price, setPrice] = useState(0);
-    const [stock, setStock] = useState(0);
+    const [price, setPrice] = useState();
+    const [stock, setStock] = useState();
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
@@ -66,11 +66,15 @@ function Items() {
             return;
         }
 
-        if (Math.floor(stock) === stock || stock < 0) {
+        if (!stock || Math.floor(stock) === stock || stock < 0) {
             setMessage('Please enter a valid stock');
             return;
         }
 
+        if (!price || price < 0) {
+            setMessage('Please enter a valid price');
+            return;
+        }
         setMessage('Preparing to upload files');
 
         const fileNames = files.map((file) => file.name); // Extract file names
