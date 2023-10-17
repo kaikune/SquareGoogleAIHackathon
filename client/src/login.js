@@ -32,11 +32,7 @@ function Login() {
                     console.log("login success!");
                     navigate("/items");
                 }
-                else {
-                    console.log("login failed :(");
-                    // TODO: dont allow this
-                    navigate("/items");
-                }
+                else console.log("login failed :(");
                 return res.json();
             })
             .then((data) => {
