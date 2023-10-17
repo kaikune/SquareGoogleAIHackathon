@@ -20,7 +20,7 @@ router.post('/', async function (req, res) {
             } catch (err) {
                 console.log('Error getting model');
                 console.log(err);
-                storeInfo = { ...user, artifactOutputUri: undefined };
+                storeInfo = { ...user };
             }
 
             res.status(200).json(storeInfo);

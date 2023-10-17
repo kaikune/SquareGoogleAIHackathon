@@ -17,9 +17,11 @@ router.post('/', async function (req, res) {
                 let storeInfo = undefined;
                 try {
                     const model = await models.getModelById(user._id);
-                    storeInfo = { ...user, ...model.artifactOutputUri };
+                    storeInfo = { ...user };
+                    storeInfo.artifactOutputUri = model.artifactOutputUri;
                 } catch (err) {
-                    storeInfo = { ...user, artifactOutputUri: undefined };
+                    console.log('Model is not defined for this store');
+                    storeInfo = { ...user };
                 }
 
                 res.status(200).json(storeInfo);

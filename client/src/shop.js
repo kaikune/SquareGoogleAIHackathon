@@ -98,6 +98,7 @@ function Shop() {
     }
 
     async function getPrice(itemName) {
+        if (itemName === 'Not Valid') return; // Don't get price of Not Valid
         if (!priceCache[itemName]) {
             const response = await fetch(`${BASE_URL}/api/getPrice`, {
                 method: 'POST',
@@ -128,6 +129,7 @@ function Shop() {
     }
 
     const addItem = (item) => {
+        if (item.id === 'Not Valid') return; // Don't do anything if item is Not Valid
         if (checkItemInCart(item.id)) {
             const newCart = [...cart];
             const index = findItemInCart(item.id);

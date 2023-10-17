@@ -11,10 +11,12 @@ function Login() {
 
     const [store, setStore] = useState('');
     const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
 
     function handleSubmission(e) {
         e.preventDefault();
 
+        setMessage('');
         authStore(store, password);
     }
 
@@ -33,7 +35,9 @@ function Login() {
                 if (res.ok) {
                     console.log('login success!');
                     navigate('/items');
-                } else console.log('login failed :(');
+                } else {
+                    throw Error('login failed :(');
+                }
                 return res.json();
             })
             .then((data) => {
@@ -44,9 +48,14 @@ function Login() {
 
                 const storeName = data['name'];
                 StoreProfile.setStoreName(storeName);
+
+                // Only store uri if model has been trained for this store
+                const uri = data['artifactOutputUri'];
+                if (uri) StoreProfile.setArtifactOutputUri(uri);
             })
             .catch((error) => {
                 console.error(error);
+                setMessage(error.message);
             });
     }
 
@@ -84,6 +93,7 @@ function Login() {
                             >
                                 <h1 className="text-white font-bold text-2xl uppercase">Log In</h1>
                             </button>
+                            {message && <h1 style={{ color: 'red' }}>{message}</h1>}
                         </form>
                     </div>
                 </div>
