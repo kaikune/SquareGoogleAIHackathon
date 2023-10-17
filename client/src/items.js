@@ -89,7 +89,7 @@ function Items() {
                 {
                     files.length <= 4 ? (
                         files.map((file) => (
-                            <h1>{file.name}</h1>
+                            <h1 key={file.name}>{file.name}</h1>
                         ))
                     ) : (
                         <h1>{files[0].name} <br /> + {files.length - 1} more...</h1>
