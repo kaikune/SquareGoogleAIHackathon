@@ -15,8 +15,8 @@ function TrainModel() {
                 // TODO: Replace values with actual stuff
                 datasetId: '5010801042728681472', // Needs to be the id of the dataset used. Given when database is created in 'name' field (testDataset)
                 bucketName: 'teststore', // Change to store name (store name from testDataset)
-                modelName: 'teststoremodel', // Change model name (I dont think this really matters)
-                pipelineName: 'teststorepipeline', // change pipeline name
+                modelName: 'bee', // Change model name (I dont think this really matters)
+                pipelineName: 'bo', // change pipeline name
             }),
         })
             .then((res) => {
