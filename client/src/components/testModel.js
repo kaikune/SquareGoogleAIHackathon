@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import * as automl from '@tensorflow/tfjs-automl';
 import * as tf from '@tensorflow/tfjs';
+import { BASE_URL } from '../apiconfig';
+import StoreProfile from '../storeprofile';
 
 function TestModel({ setModelData }) {
     const [message, setMessage] = useState('');
@@ -8,10 +10,55 @@ function TestModel({ setModelData }) {
     const ms = 100; //Delay between model scans in ms
     let model = undefined;
 
+    // Gets the model url for a store
+    const getModelUrl = async (store) => {
+        const artifactOutputUri = StoreProfile.getArtifactOutputUri();
+        if (artifactOutputUri) {
+            // Check if in local storage first
+            console.log(`Found model ${artifactOutputUri} in local storage`);
+            return artifactOutputUri;
+        }
+
+        console.log('Uri not found in local storage, fetching from server');
+
+        // Fetches store info
+        const response = await fetch(`${BASE_URL}/api/getStoreInfo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                store: store,
+            }),
+        });
+
+        if (!response.ok) {
+            console.log('Failed to fetch store data');
+            return;
+        }
+
+        const data = await response.json();
+        console.log(data);
+
+        StoreProfile.setArtifactOutputUri(data.artifactOutputUri); // Save uri to local storage
+
+        return data.artifactOutputUri;
+    };
+
     const queryModel = async () => {
-        // TODO: ModelURL should be passed into component instead of harcoded. Will be recieved by testTraining.js (from trainModel.js in server )
-        const modelURL =
-            'https://storage.googleapis.com/hackathon-401318-teststore/models/model-6898483287224745984/tf-js/2023-10-09T21:07:07.022206Z';
+        let storeName = StoreProfile.getStoreName(); // Gets store name from local storage
+
+        if (!storeName) {
+            console.log('No store name found, using default store');
+            storeName = 'snapstore';
+        }
+
+        let modelURL = await getModelUrl(storeName);
+        if (!modelURL) {
+            console.log('No model found for store, using default model');
+            modelURL =
+                'https://storage.googleapis.com/hackathon-401318-teststore/models/model-6898483287224745984/tf-js/2023-10-09T21:07:07.022206Z/model.json';
+        }
         // Initialize model if not already
         setLoading(true);
         console.log('Loading model..');
@@ -19,7 +66,7 @@ function TestModel({ setModelData }) {
         if (!model) {
             try {
                 // Load the model
-                model = await Promise.resolve(automl.loadImageClassification(`${modelURL}/model.json`));
+                model = await Promise.resolve(automl.loadImageClassification(modelURL));
                 console.log(model);
             } catch (error) {
                 console.error('Error loading model:', error);
@@ -36,42 +83,39 @@ function TestModel({ setModelData }) {
         const predict = async () => {
             const img = await webcam.capture();
             const result = await model.classify(img);
-            const reqProb = .4;
+            const reqProb = 0.4;
 
-            if(resultdict === undefined){
-                resultdict = {...result}
+            if (resultdict === undefined) {
+                resultdict = { ...result };
             }
             Object.keys(result).forEach((key) => {
-                resultdict[key].label = result[key].label
-                resultdict[key].prob = result[key].prob
-            })
+                resultdict[key].label = result[key].label;
+                resultdict[key].prob = result[key].prob;
+            });
 
             const pred = Object.keys(resultdict).reduce((a, b) => (resultdict[a].prob > resultdict[b].prob ? a : b));
 
             {
                 //console.log(result[pred])
-                if(resultdict[pred].label === currentLabel && resultdict[pred].label !== "Not Valid"){
-                    if(resultdict[pred].prob >= reqProb){
-                        if(resultdict[pred].successfulChecks !== undefined){
+                if (resultdict[pred].label === currentLabel && resultdict[pred].label !== 'Not Valid') {
+                    if (resultdict[pred].prob >= reqProb) {
+                        if (resultdict[pred].successfulChecks !== undefined) {
                             resultdict[pred].successfulChecks++;
-                            console.log("Check Passed")
-                        }
-                        else{
+                            console.log('Check Passed');
+                        } else {
                             resultdict[pred].successfulChecks = 0;
-                            console.log("Undefined Found")
+                            console.log('Undefined Found');
                         }
-                    }
-                    else{
-                        if(resultdict[pred].successfulChecks === undefined){
+                    } else {
+                        if (resultdict[pred].successfulChecks === undefined) {
                             resultdict[pred].successfulChecks = 0;
                         }
-                        console.log("Check Failed")
+                        console.log('Check Failed');
                     }
-                }
-                else{
-                    currentLabel = resultdict[pred].label
+                } else {
+                    currentLabel = resultdict[pred].label;
                     resultdict[pred].successfulChecks = 0;
-                    console.log("Check Reset")
+                    console.log('Check Reset');
                 }
             }
 
@@ -84,12 +128,12 @@ function TestModel({ setModelData }) {
         };
 
         // Continuously make predictions and update state
-        let currentLabel = ""
+        let currentLabel = '';
         let resultdict = undefined;
         const predictLoop = async () => {
             while (true) {
                 await predict();
-                await new Promise(r => setTimeout(r, ms));
+                await new Promise((r) => setTimeout(r, ms));
                 await tf.nextFrame();
             }
         };

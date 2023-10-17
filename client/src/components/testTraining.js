@@ -33,11 +33,10 @@ function TrainModel() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                // TODO: Replace values with actual stuff
-                datasetId: data.datasetID, // Needs to be the id of the dataset used. Given when database is created in 'name' field (testDataset)
-                bucketName: data.name, // Change to store name (store name from testDataset)
-                modelName: 'model', // Change model name (I dont think this really matters)
-                pipelineName: 'modelpipeline', // change pipeline name
+                datasetId: data.datasetID, // Needs to be the id of the dataset used.
+                bucketName: data.name, // Store name
+                modelName: `${data.name}model`, // Model name
+                pipelineName: `${data.name}pipeline`, // Pipeline name
             }),
         })
             .then((res) => {

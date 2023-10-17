@@ -42,7 +42,6 @@ function Shop() {
                         price: price,
                     });
                     console.log(cart);
-
                 }}
             >
                 <img className="w-full h-1/2 object-contain" src={image} />
@@ -116,12 +115,14 @@ function Shop() {
                 data = await response.json();
                 let newCache = { ...priceCache };
                 newCache[itemName] = data.price;
+                console.log(newCache);
                 setPriceCache(newCache);
                 return data.price;
             } else {
                 console.log('Error fetching price');
             }
         } else {
+            console.log(`price cache used for ${itemName}`);
             return priceCache[itemName];
         }
     }
@@ -155,12 +156,12 @@ function Shop() {
                                         id: modelData.label,
                                         quantity: 1,
                                         name: modelData.label,
-                                        price: getPrice()
-                                    })   
+                                        price: await getPrice(modelData.label),
+                                    })
                                 }
-                                >
-                                    Add Item
-                                </button>
+                            >
+                                Add Item
+                            </button>
                             <h1>{modelData.label}</h1>
                         </div>
                     </div>
