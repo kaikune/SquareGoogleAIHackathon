@@ -92,7 +92,7 @@ function Items() {
                             <h1>{file.name}</h1>
                         ))
                     ) : (
-                        <h1>{files[0].name} <br /> + {files.length} more...</h1>
+                        <h1>{files[0].name} <br /> + {files.length - 1} more...</h1>
                     )
                 }
             </div>
