@@ -82,13 +82,19 @@ function Items() {
 
     return (
         <div className="flex flex-col justify-center items-center w-full h-full gap-3 relative">
-            <input className="w-2/3 h-1/2 opacity-0 cursor-pointer" type="file" multiple accept=".jpg" onChange={handleFileChange} />
-            <div className="flex flex-col justify-center items-center w-2/3 h-1/2 bg-silver-300 border-dotted border-silver-500 border-8 rounded-full absolute top-20 pointer-events-none">
+            <input className="w-2/3 h-1/3 opacity-0 cursor-pointer" type="file" multiple accept=".jpg" onChange={handleFileChange} />
+            <div className="flex flex-col justify-center items-center w-2/3 h-1/3 bg-silver-300 border-dotted border-silver-500 border-8 rounded-full absolute top-20 pointer-events-none">
                 <Upload size={100} />
                 <h1 className="text-2xl font-bold">Upload Files</h1>
-                {files.map((file) => (
-                    <h1>{file.name}</h1>
-                ))}
+                {
+                    files.length <= 5 ? (
+                        files.map((file) => (
+                            <h1>{file.name}</h1>
+                        ))
+                    ) : (
+                        <h1>{files[0].name} <br /> + {files.length} more...</h1>
+                    )
+                }
             </div>
             <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="text" value={label} placeholder="Pasta Sauce" onChange={handleLabelChange} />
             <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="number" value={price} placeholder="1.99" onChange={handlePriceChange} />
