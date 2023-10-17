@@ -16,7 +16,7 @@ function Login() {
     function handleSubmission(e) {
         e.preventDefault();
 
-        setMessage('');
+        setMessage('Logging in');
         authStore(store, password);
     }
 
@@ -93,7 +93,7 @@ function Login() {
                             >
                                 <h1 className="text-white font-bold text-2xl uppercase">Log In</h1>
                             </button>
-                            {message && <h1 style={{ color: 'red' }}>{message}</h1>}
+                            {message && <h1>{message}</h1>}
                         </form>
                     </div>
                 </div>
