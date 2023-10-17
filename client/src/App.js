@@ -15,6 +15,7 @@ import Items from './items';
 import Nav from './components/nav';
 
 import StoreProfile from './storeprofile';
+import Train from './train';
 
 function App() {
     return (
@@ -39,6 +40,7 @@ function App() {
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/create" element={<Create />} />
                                 <Route path="/items" element={<Items />} />
+                                <Route path="/train" element={<Train />} />
                             </Routes>
                         </div>
                         <div className="w-screen h-1/6">

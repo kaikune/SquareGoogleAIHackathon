@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { Tv2, Store, Contact } from 'lucide-react';
+import { Tv2, Store, Cog } from 'lucide-react';
 
 function Nav() {
     return (
@@ -16,9 +16,11 @@ function Nav() {
                         <Store color="white" size={100} />
                     </button>
                 </Link>
-                <button>
-                    <Contact color="white" size={100} />
-                </button>
+                <Link to={'/train'}>
+                    <button>
+                        <Cog color="white" size={100} />
+                    </button>
+                </Link>
             </div>
         </>
     );

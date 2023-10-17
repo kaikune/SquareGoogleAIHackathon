@@ -127,7 +127,7 @@ function Items() {
     return (
         <div className="flex flex-col justify-center items-center w-full h-full gap-3 relative">
             <input className="w-2/3 h-1/3 opacity-0 cursor-pointer" type="file" multiple accept=".jpg" onChange={handleFileChange} />
-            <div className="flex flex-col justify-center items-center w-2/3 h-1/3 bg-silver-300 border-dotted border-silver-500 border-8 rounded-full absolute top-20 pointer-events-none">
+            <div className="flex flex-col justify-center items-center w-2/3 h-1/4 bg-silver-300 border-dotted border-silver-500 border-8 rounded-full absolute top-20 pointer-events-none">
                 <Upload size={100} />
                 <h1 className="text-2xl font-bold">Upload Files</h1>
                 {files.length <= 4 ? (

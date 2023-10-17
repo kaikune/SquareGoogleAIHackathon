@@ -64,7 +64,6 @@ function Create() {
             await createUser(store, password, datasetID); // Creates dataset and returns its data
 
             navigate("/items"); // navigate to creating items
-
         }
     }
 

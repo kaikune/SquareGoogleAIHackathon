@@ -34,7 +34,6 @@ function Login() {
             .then((res) => {
                 if (res.ok) {
                     console.log('login success!');
-                    navigate('/items');
                 } else {
                     throw Error('login failed :(');
                 }
@@ -52,6 +51,9 @@ function Login() {
                 // Only store uri if model has been trained for this store
                 const uri = data['artifactOutputUri'];
                 if (uri) StoreProfile.setArtifactOutputUri(uri);
+                
+                // nagivate to items
+                navigate('/items');
             })
             .catch((error) => {
                 console.error(error);
