@@ -55,8 +55,10 @@ function Items() {
             setMessage('Please select one or more files.');
             return;
         }
-        if (label.length === 0) {
-            setMessage('Please enter a label');
+        console.log(label);
+        if (label === '') {
+            setMessage('Please enter a label.');
+            return;
         }
 
         setMessage('Preparing to upload files');
@@ -93,7 +95,7 @@ function Items() {
                 <Upload size={100} />
                 <h1 className="text-2xl font-bold">Upload Files</h1>
                 {files.length <= 4 ? (
-                    files.map((file) => <h1>{file.name}</h1>)
+                    files.map((file) => <h1 key={file.name}>{file.name}</h1>)
                 ) : (
                     <h1>
                         {files[0].name} <br /> + {files.length - 1} more...
