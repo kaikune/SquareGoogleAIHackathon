@@ -29,7 +29,7 @@ function FileUpload() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    bucketName: 'teststore', // Change to store name
+                    bucketName: 'snapstore', // Change to store name
                     label: label, // Label for all the images
                     fileNames: fileNames, // Send an array of file names
                     price: price * 100,

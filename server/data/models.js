@@ -18,8 +18,8 @@ const addModel = async (modelID, artifactOutputUri) => {
     if (!modelID || !artifactOutputUri) {
         throw 'addModel missing parameter';
     }
-    if (isNaN(modelID)) {
-        throw 'addModel modelID must be int';
+    if (typeof modelID !== 'string') {
+        throw 'addModel modelID must be string';
     }
     if (typeof artifactOutputUri !== 'string') {
         throw 'addModel artifactOutputUri must be a string';
@@ -58,7 +58,7 @@ const updateModel = async (id, modelID, artifactOutputUri) => {
     if (!modelID || !artifactOutputUri) {
         throw 'addModel missing parameter';
     }
-    if (isNaN(modelID)) {
+    if (typeof modelID !== 'string') {
         throw 'addModel modelID must be int';
     }
     if (typeof artifactOutputUri !== 'string') {

@@ -13,10 +13,10 @@ function TrainModel() {
             },
             body: JSON.stringify({
                 // TODO: Replace values with actual stuff
-                datasetId: '1631861073084678144', // Needs to be the id of the dataset used. Given when database is created in 'name' field (testDataset)
-                bucketName: 'teststore', // Change to store name (store name from testDataset)
-                modelName: 'wmop', // Change model name (I dont think this really matters)
-                pipelineName: 'weep', // change pipeline name
+                datasetId: '464865819642298368', // Needs to be the id of the dataset used. Given when database is created in 'name' field (testDataset)
+                bucketName: 'snapstore', // Change to store name (store name from testDataset)
+                modelName: 'model', // Change model name (I dont think this really matters)
+                pipelineName: 'modelpipeline', // change pipeline name
             }),
         })
             .then((res) => {
@@ -28,7 +28,7 @@ function TrainModel() {
             .then((data) => {
                 // Sets the url of the model to be accessible
                 // TODO: Send modelURL to root so it can be passed to testModel
-                setModelURL(`${data.replace('gs:/', 'https://storage.googleapis.com')}/model.json`);
+                setModelURL(data);
                 console.log(modelURL);
             })
             .catch((error) => {

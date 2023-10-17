@@ -83,7 +83,8 @@ async function exportModel(bucketName, modelId) {
     const modelServiceClient = new ModelServiceClient(clientOptions);
 
     // Configure the name resources
-    const name = `projects/${project}/locations/${location}/models/abcd${modelId}`;
+    const name = `projects/${project}/locations/${location}/models/${modelId}`;
+
     // Configure the outputConfig resources
     const outputConfig = {
         exportFormatId: 'tf-js',
@@ -140,14 +141,14 @@ async function waitForTrainingCompletion(pipelineName) {
     }
 }
 
-async function saveUriToDB(storeName, exportResponse) {
-    const allUsers = users.getAllUsers();
+async function saveUriToDB(storeName, url) {
+    const allUsers = await users.getAllUsers();
 
     console.log('Saving URI to db');
 
     for (const user of allUsers) {
         if (user.name === storeName) {
-            models.addModel(user._id, exportResponse.metadata.outputInfo.artifactOutputUri);
+            await models.addModel(user._id, url);
         }
     }
     console.log('Done!');
@@ -234,15 +235,18 @@ router.post('/', async function (req, res) {
 
         // Wait for model to be created
         const modelId = await waitForTrainingCompletion(pipelineName);
+        console.log(modelId);
 
         // Export model
-        if (trainingResponse) {
+        if (modelId) {
             const exportResponse = await exportModel(bucketName, modelId);
-            //const exportResponse = await exportModel(bucketName, '6898483287224745984'); //DEBUG
+            //const exportResponse = await exportModel(bucketName, '464865819642298368'); //DEBUG
+
+            const url = `${exportResponse.metadata.outputInfo.artifactOutputUri.replace('gs:/', 'https://storage.googleapis.com')}/model.json`;
 
             // Save model uri to database
             try {
-                saveUriToDB(storeName, exportResponse);
+                await saveUriToDB(storeName, url);
             } catch (err) {
                 console.log(err);
                 res.status(500).json(err);
