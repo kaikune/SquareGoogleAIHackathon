@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { Store } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Store, ArrowLeft } from 'lucide-react';
 
 import { BASE_URL } from "./apiconfig";
 
@@ -51,8 +51,10 @@ function Login() {
         <>
             <div className="flex flex-col justify-center items-center bg-gray-200 w-full h-full">
                 
-                <div className="flex flex-col justify-evenly items-center w-3/4 md:w-1/2 h-3/4 bg-white rounded-2xl drop-shadow-xl">
-                    <div className="padding"/>
+                <div className="flex flex-col justify-evenly items-center w-3/4 md:w-1/2 h-3/4 bg-white rounded-2xl drop-shadow-xl p-5">
+                    <Link className="flex flex-col justify-center items-center w-full" to="/">
+                        <ArrowLeft className="self-start" size={50}/>
+                    </Link>
                     <div className="flex flex-col justify-center items-center">
                         <Store color="black" size={100} />
                         <h1 className="text-black font-bold text-4xl uppercase tracking-wider select-none">Snap Cart</h1>
