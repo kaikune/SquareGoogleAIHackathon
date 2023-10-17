@@ -87,7 +87,7 @@ function Items() {
                 <Upload size={100} />
                 <h1 className="text-2xl font-bold">Upload Files</h1>
                 {
-                    files.length <= 5 ? (
+                    files.length <= 4 ? (
                         files.map((file) => (
                             <h1>{file.name}</h1>
                         ))
