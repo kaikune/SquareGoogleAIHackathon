@@ -8,12 +8,18 @@ var StoreProfile = (function() {
     var setDatasetId = function(id) {
         datasetId = id;     
         // Also set this in cookie/localStorage
-        localStorage.setItem("datasetId", id)
+        localStorage.setItem("datasetId", id);
+    };
+
+    var logout = function() {
+        datasetId = "" // reset dataset id
+        localStorage.setItem("datasetId", "");
     };
 
     return {
         getDatasetId: getDatasetId,
-        setDatasetId: setDatasetId
+        setDatasetId: setDatasetId,
+        logout: logout
     }
 })();
 
