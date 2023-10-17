@@ -2,6 +2,7 @@ const express = require('express');
 var router = express.Router();
 const crypto = require('crypto');
 const { Client, Environment } = require('square');
+const { search } = require('./trainModel');
 
 // Charge card from given payment source
 async function processPayment(client, location, sourceId, total) {
@@ -30,6 +31,7 @@ async function processPayment(client, location, sourceId, total) {
 
 // Updates inventory based on cart
 async function updateInventory(client, location, itemIds) {
+    console.log(itemIds);
     console.log('Updating inventory');
     const { inventoryApi } = client;
     const date = new Date();
@@ -47,8 +49,8 @@ async function updateInventory(client, location, itemIds) {
                 fromState: 'IN_STOCK',
                 toState: 'SOLD',
                 locationId: location,
-                catalogObjectId: itemId, //Add inventory ID here
-                quantity: '1',
+                catalogObjectId: itemId.id,
+                quantity: String(itemId.quantity),
                 occurredAt: date.toISOString(), // RFC-3339 timestamp
             },
         };
@@ -66,18 +68,19 @@ async function updateInventory(client, location, itemIds) {
 
 // Gets items into item ids
 async function processItems(client, items) {
+    console.log('Processing Items');
     const { catalogApi } = client;
     let itemIds = [];
 
     // Search for each item in catalog and get id of ITEM_VARIATION
     for (const item of items) {
         const filter = {
-            textFilter: item,
+            textFilter: item.id,
         };
         const searchResponse = await catalogApi.searchCatalogItems(filter);
-        if (response.errors) throw response.errors;
+        //console.log(searchResponse.result.items[0].itemData.variations[0].id);
 
-        itemIds.push(searchResponse.items[0].item_data.variations[0].id); // gets the item id from response
+        itemIds.push({ id: searchResponse.result.items[0].itemData.variations[0].id, quantity: item.quantity }); // gets the item id from response
     }
 
     return itemIds;
@@ -90,18 +93,21 @@ router.post('/', async function (req, res) {
         environment: Environment.Sandbox,
     });
     const total = req.body.total;
-    const sourceID = req.body.sourceID;
+    const sourceID = req.body.sourceId;
     const items = req.body.items;
     const location = process.env.SQUARE_LOCATION_ID;
 
+    console.log(sourceID);
     let paymentResult = undefined;
     let itemIds = [];
 
+    console.log(items);
     // Get array of item ids
     try {
         itemIds = await processItems(client, items);
     } catch (err) {
         console.log('Error processing items');
+        console.log(err);
         res.status(500).json(err);
         return;
     }
@@ -111,6 +117,7 @@ router.post('/', async function (req, res) {
         paymentResult = await processPayment(client, location, sourceID, total);
     } catch (err) {
         console.log('Error processing payment');
+        console.log(err);
         res.status(500).json(err);
         return;
     }
@@ -121,12 +128,13 @@ router.post('/', async function (req, res) {
         paymentResult = { ...paymentResult, ...inventoryResult }; // Merge objs
     } catch (err) {
         console.log('Error updating inventory');
+        console.log(err);
         res.status(500).json(err);
         return;
     }
 
     // Return result of payment and inventory
-    res.status(200).json(paymentResult);
+    res.status(200).json('Payment Successful');
 });
 
 module.exports = router;

@@ -187,7 +187,7 @@ function Shop() {
                                     <X className="cursor-pointer" color="white" onClick={() => setCharging(false)} />
                                     <h1 className="text-white font-bold">${calculateTotalPrice()}</h1>
                                 </div>
-                                <Payment price={calculateTotalPrice()} />
+                                <Payment price={calculateTotalPrice()} items={cart} />
                             </>
                         ) : (
                             <>
