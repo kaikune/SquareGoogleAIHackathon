@@ -146,6 +146,8 @@ function Shop() {
         setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
     }
 
+    let desiredWidth = 1080/1920 * window.outerWidth
+    let desiredHeight = 607/1032 * window.outerHeight
     const addButton = {
         color: "black",
         background: "grey",
@@ -153,7 +155,7 @@ function Shop() {
         padding: "10px",
         border: "none",
         borderRadius: "12px",
-        width: "1080px"
+        width: `${desiredWidth}px`
     }
 
     return (

@@ -127,6 +127,8 @@ function TestModel({ setModelData, charging }) {
     //     queryModel();
     // }, []);
 
+    let desiredWidth = 1080/1920 * window.outerWidth
+    let desiredHeight = 607/1032 * window.outerHeight
     const startButton = {
         color: "black",
         fontSize: "24px",
@@ -136,8 +138,8 @@ function TestModel({ setModelData, charging }) {
         translatey: "5px"
     }
     const camSize = {
-        width: "1080px",
-        height: "607px"
+        width: `${desiredWidth}px`,
+        height: `${desiredHeight}px`
     }
     const predictionText = {
         textAlign: "center",
@@ -146,7 +148,7 @@ function TestModel({ setModelData, charging }) {
         border: "none",
         borderRadius: "0px",
         background: "black",
-        width: "1080px"
+        width: `${desiredWidth}px`
     }
 
     return (
