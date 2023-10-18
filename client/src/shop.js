@@ -146,14 +146,24 @@ function Shop() {
         setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
     }
 
+    const addButton = {
+        color: "black",
+        background: "grey",
+        fontBold: true,
+        padding: "10px",
+        border: "none",
+        borderRadius: "12px",
+        width: "1080px"
+    }
+
     return (
         <>
             <div className="flex flex-row w-full h-full bg-white">
                 <div className="flex flex-col w-full h-full">
                     <div className="flex flex-col justify-center items-center w-full h-full bg-silver-500">
-                        <div className="w-3/4 h-full p-10">
-                            <TestM setModelData={setModelData} charging={charging} />
-                            <button
+                    <div className="flex flex-col w-3/4 h-[770px] p-10">
+                            <TestM setModelData={setModelData} />
+                            <button style = {addButton} className="text-gold-500 font-bold text-2xl translate-y-5" 
                                 onClick={async () =>
                                     addItem({
                                         id: modelData.label,
@@ -162,7 +172,7 @@ function Shop() {
                                         price: await getPrice(modelData.label),
                                     })
                                 }
-                            >
+                                >
                                 Add Item
                             </button>
                             <h1>{modelData.label}</h1>

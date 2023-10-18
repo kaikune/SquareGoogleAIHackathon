@@ -95,6 +95,10 @@ function TestModel({ setModelData, charging }) {
 
             const pred = Object.keys(resultdict).reduce((a, b) => (resultdict[a].prob > resultdict[b].prob ? a : b));
 
+            if(resultdict[pred].label === "Hat"){
+                resultdict[pred].label = "Not Valid"
+            }
+
             setMessage(`prediction: ${resultdict[pred].label}, probability: ${resultdict[pred].prob}`);
 
             // Set the prediction state
@@ -123,10 +127,26 @@ function TestModel({ setModelData, charging }) {
     //     queryModel();
     // }, []);
 
+    const startButton = {
+        color: "black",
+        fontSize: "24px",
+        background: "#55AA55",
+        padding: "10px",
+        borderRadius: "36px",
+        translatey: "5px"
+    }
+    const camSize = {
+        width: "1080px",
+        height: "607px"
+    }
+
     return (
-        <div>
-            <video autoPlay playsInline muted id="webcam" className="w-full h-2/3 object-cover"></video>
-            {loading ? <></> : <button onClick={queryModel}>Test Model</button>}
+            <div className='w-full h-full bg-black-900'>
+            <div id="webcamContainer" style={camSize}>
+                <video autoPlay playsInline muted id="webcam" className="w-full h-full bg-black object-cover"></video>
+        </div>
+
+            {loading ? <></> : <button style = {startButton} onClick={queryModel}><b> Start Camera </b></button>}
             {message && <div>{message}</div>}
         </div>
     );
