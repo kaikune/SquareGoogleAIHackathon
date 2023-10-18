@@ -18,6 +18,13 @@ import StoreProfile from './storeprofile';
 import Train from './train';
 
 function App() {
+
+    let upperShop = {
+        height: `${770 * window.innerHeight/932}px`
+    }
+    let lowerShop = {
+        height: `${162 * window.innerHeight/932}px`
+    }
     return (
         <>
             <div className="w-screen h-screen">
@@ -33,7 +40,7 @@ function App() {
                     </>
                 ) : (
                     <>
-                        <div className="w-full h-5/6">
+                        <div className="w-full h-full" style={upperShop}>
                             <Routes>
                                 <Route path="/" element={<Home />} />
                                 <Route path="/shop" element={<Shop />} />
@@ -43,7 +50,7 @@ function App() {
                                 <Route path="/train" element={<Train />} />
                             </Routes>
                         </div>
-                        <div className="w-screen h-1/6">
+                        <div className="w-full h-1/6" style={lowerShop}>
                             <Nav />
                         </div>
                     </>

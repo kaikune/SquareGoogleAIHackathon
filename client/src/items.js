@@ -124,6 +124,17 @@ function Items() {
         setMessage('Good to go!');
     };
 
+    let widthMult = window.innerWidth/1920 
+    let heightMult = window.innerHeight/923
+    const upper = {
+        height: `${190.64 * heightMult}`,
+        width: `${1280 * widthMult}`
+    }
+    const lower = {
+        height: `${64 * heightMult}`,
+        width: `${640 * widthMult}`
+    }
+
     return (
         <div className="flex flex-col justify-center items-center w-full h-full gap-3 relative">
             <input className="w-2/3 h-1/3 opacity-0 cursor-pointer" type="file" multiple accept=".jpg" onChange={handleFileChange} />
@@ -138,8 +149,8 @@ function Items() {
                     </h1>
                 )}
             </div>
-            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="text" value={label} placeholder="Product Name" onChange={handleLabelChange} />
-            <input className="bg-gray-200 w-1/3 p-5 rounded-full" type="number" value={price} placeholder="Price" onChange={handlePriceChange} />
+            <input className="bg-gray-200 w-1/3 p-5 rounded-full" style={lower} type="text" value={label} placeholder="Product Name" onChange={handleLabelChange} />
+            <input className="bg-gray-200 w-1/3 p-5 rounded-full" style={lower} type="number" value={price} placeholder="Price" onChange={handlePriceChange} />
             <input
                 className="bg-gray-200 w-1/3 p-5 rounded-full"
                 type="number"
@@ -147,7 +158,7 @@ function Items() {
                 placeholder="Initial Stock"
                 onChange={handleStockChange}
             />
-            <button className="bg-silver-500 w-1/3 px-8 py-4 rounded-full transition-all duration-300 hover:brightness-75" onClick={handleUpload}>
+            <button className="bg-silver-500 w-1/3 px-8 py-4 rounded-full transition-all duration-300 hover:brightness-75" style={lower} onClick={handleUpload}>
                 <h1 className="text-white font-bold text-2xl uppercase">Upload</h1>
             </button>
 

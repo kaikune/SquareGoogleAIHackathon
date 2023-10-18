@@ -146,16 +146,30 @@ function Shop() {
         setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
     }
 
-    let desiredWidth = 1080/1920 * window.outerWidth
-    let desiredHeight = 607/1032 * window.outerHeight
+    let heightMult = window.innerHeight/923
+    let widthMult = window.innerWidth/1920
     const addButton = {
         color: "black",
         background: "grey",
+        fontSize: `${24 * heightMult}px`,
         fontBold: true,
-        padding: "10px",
+        padding: `${10 * heightMult}px`,
         border: "none",
         borderRadius: "12px",
-        width: `${desiredWidth}px`
+        width: `${1080 * widthMult}px`,
+        height: `${60 * heightMult}px`
+    }
+    const subtotalSize ={
+        height: `${32 * heightMult}px`,
+        width: `${498 * widthMult}px`,
+    }
+    const totalSize = {
+        height: `${60 * heightMult}px`,
+        width: `${498 * widthMult}px`,
+    }
+    const chargeButton = {
+        height: `${64 * heightMult}px`,
+        width: `${498 * widthMult}px`,
     }
 
     return (
@@ -165,7 +179,7 @@ function Shop() {
                     <div className="flex flex-col justify-center items-center w-full h-full bg-silver-500">
                     <div className="flex flex-col w-3/4 h-[770px] p-10">
                             <TestM setModelData={setModelData} />
-                            <button style = {addButton} className="text-gold-500 font-bold text-2xl translate-y-5" 
+                            <button style = {addButton} className="text-gold-500 font-bold text-2xl" 
                                 onClick={async () =>
                                     addItem({
                                         id: modelData.label,
@@ -177,13 +191,13 @@ function Shop() {
                                 >
                                 Add Item
                             </button>
-                            <h1>{modelData.label}</h1>
                         </div>
                     </div>
                     <div className="w-full h-1/4"></div>
                 </div>
 
-                <div className="w-2/5 h-full bg-white">
+                <div className="w-2/5 h-full bg-white" >
+                    {/* HERE */}
                     <div className="flex flex-row justify-start items-center w-full h-1/6 px-12 gap-5 object-fill">
                         <img src="/bad.jpg" className="w-20 h-20 rounded-full" />
                         <h1 className="text-silver-500 font-bold text-3xl">{StoreProfile.getStoreName()}</h1>
@@ -204,15 +218,15 @@ function Shop() {
                             </>
                         ) : (
                             <>
-                                <div className="flex flex-row justify-between items-center w-full px-5">
+                                <div className="flex flex-row justify-between items-center w-full px-5" style={subtotalSize}>
                                     <h1 className="text-white font-bold text-2xl">subtotal</h1>
                                     <h1 className="text-white font-bold text-2xl">{calculateTotalPrice()}</h1>
                                 </div>
-                                <div className="flex flex-row justify-between items-center w-full px-5 pb-3">
-                                    <h1 className="text-white font-bold text-5xl">total</h1>
+                                <div className="flex flex-row justify-between items-center w-full px-5 pb-3" style={totalSize}>
+                                    <h1 className={`text-white font-bold text-5xl`}>total</h1>
                                     <h1 className="text-white font-bold text-5xl">{calculateTotalPrice()}</h1>
                                 </div>
-                                <div className="flex flex-row justify-center items-center w-full bg-silver-300 p-2 rounded-full">
+                                <div className="flex flex-row justify-center items-center w-full bg-silver-300 p-2 rounded-full" style={chargeButton} >
                                     <button className="text-silver-500 font-bold text-5xl" onClick={() => setCharging(true)}>
                                         charge
                                     </button>

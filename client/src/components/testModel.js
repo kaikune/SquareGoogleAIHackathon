@@ -127,28 +127,30 @@ function TestModel({ setModelData, charging }) {
     //     queryModel();
     // }, []);
 
-    let desiredWidth = 1080/1920 * window.outerWidth
-    let desiredHeight = 607/1032 * window.outerHeight
+    let widthMult = window.innerWidth/1920 
+    let heightMult = window.innerHeight/923
     const startButton = {
         color: "black",
-        fontSize: "24px",
+        fontSize: `${24 * heightMult}px`,
         background: "#55AA55",
-        padding: "10px",
+        padding: `${10 * heightMult}px`,
         borderRadius: "36px",
-        translatey: "5px"
+        height: `${60}px`,
+        width: `${180}px`,
     }
     const camSize = {
-        width: `${desiredWidth}px`,
-        height: `${desiredHeight}px`
+        width: `${1080 * widthMult}px`,
+        height: `${607 * heightMult}px`
     }
     const predictionText = {
         textAlign: "center",
-        fontSize:"16px",
+        fontSize:`${16 * heightMult}px`,
         color: "white",
         border: "none",
         borderRadius: "0px",
         background: "black",
-        width: `${desiredWidth}px`
+        width: `${1080 * widthMult}px`,
+        height: `${24 * heightMult}px`
     }
 
     return (
