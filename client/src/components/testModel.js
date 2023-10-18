@@ -99,7 +99,7 @@ function TestModel({ setModelData, charging }) {
                 resultdict[pred].label = "Not Valid"
             }
 
-            setMessage(`prediction: ${resultdict[pred].label}, probability: ${resultdict[pred].prob}`);
+            setMessage(`${resultdict[pred].label}`);
 
             // Set the prediction state
             setModelData(resultdict[pred]);
@@ -139,6 +139,15 @@ function TestModel({ setModelData, charging }) {
         width: "1080px",
         height: "607px"
     }
+    const predictionText = {
+        textAlign: "center",
+        fontSize:"16px",
+        color: "white",
+        border: "none",
+        borderRadius: "0px",
+        background: "black",
+        width: "1080px"
+    }
 
     return (
             <div className='w-full h-full bg-black-900'>
@@ -147,7 +156,7 @@ function TestModel({ setModelData, charging }) {
         </div>
 
             {loading ? <></> : <button style = {startButton} onClick={queryModel}><b> Start Camera </b></button>}
-            {message && <div>{message}</div>}
+            {message && <div style={predictionText}>{message}</div>}
         </div>
     );
 }
