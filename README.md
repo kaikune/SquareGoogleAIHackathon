@@ -1,5 +1,6 @@
 # SquareGoogleAIHackathon
 Entry for Square + Google AI Hackathon 2023
+Entry page can be found here: https://devpost.com/software/snap-cart
 
 To run backend:
 Open a terminal window and run
